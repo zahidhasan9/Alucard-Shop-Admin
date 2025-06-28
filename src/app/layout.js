@@ -30,10 +30,8 @@ export default function RootLayout({ children }) {
       <body className={inter.className}>
         <LayoutProvider>
           <Providers>
-            <AppWrapper>
-              {children}
-              <GlobalToast />
-            </AppWrapper>
+            <AppWrapper>{children}</AppWrapper>
+            <GlobalToast />
           </Providers>
         </LayoutProvider>
       </body>

@@ -30,7 +30,9 @@ const SignInForm = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      router.push('/');
+      setTimeout(() => {
+        router.push('dashboard/ecommerce/');
+      });
     }
   }, [isAuthenticated, router]);
 

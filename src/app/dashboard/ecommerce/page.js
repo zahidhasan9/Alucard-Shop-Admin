@@ -1,4 +1,6 @@
-import { Row, Col } from "react-bootstrap";
+'use client';
+import { Row, Col } from 'react-bootstrap';
+import PrivateRoute from '@/HOC/PrivateRoute';
 import Welcome from '@/components/Dashboard/eCommerce/Welcome';
 import TotalSales from '@/components/Dashboard/eCommerce/TotalSales';
 import TotalOrders from '@/components/Dashboard/eCommerce/TotalOrders';
@@ -11,9 +13,9 @@ import OrderSummary from '@/components/Dashboard/eCommerce/OrderSummary';
 import RecentTransactions from '@/components/Dashboard/eCommerce/RecentTransactions';
 import ReturningCustomerRate from '@/components/Dashboard/eCommerce/ReturningCustomerRate';
 
-export default function Page() {
+function Page() {
   return (
-    <> 
+    <>
       <Row>
         <Col xs={12} lg={8}>
           <Welcome />
@@ -28,7 +30,7 @@ export default function Page() {
 
           <TotalRevenue />
         </Col>
-      </Row> 
+      </Row>
 
       <Row>
         <Col xs={12} lg={12} xl={5}>
@@ -38,7 +40,7 @@ export default function Page() {
         <Col xs={12} lg={12} xl={7}>
           <TopSellingProducts />
         </Col>
-      </Row> 
+      </Row>
 
       <Row>
         <Col xs={12} lg={12} xl={8}>
@@ -49,7 +51,7 @@ export default function Page() {
           <OrderSummary />
         </Col>
       </Row>
-      
+
       <Row>
         <Col xs={12} lg={4}>
           <RecentTransactions />
@@ -58,7 +60,8 @@ export default function Page() {
         <Col xs={12} lg={8}>
           <ReturningCustomerRate />
         </Col>
-      </Row> 
+      </Row>
     </>
   );
 }
+export default PrivateRoute(Page);

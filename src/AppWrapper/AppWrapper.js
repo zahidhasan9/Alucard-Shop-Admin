@@ -15,9 +15,9 @@ export default function AppWrapper({ children }) {
     }
   }, [isAuthenticated, dispatch]);
 
-  if (loading) {
-    return <Loader />;
-  }
+  // if (loading) {
+  //   return <Loader />;
+  // }
 
   return <>{children}</>;
 }
