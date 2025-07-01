@@ -11,7 +11,7 @@ export default function withAuth(WrappedComponent) {
 
     useEffect(() => {
       if (!isAuthenticated) {
-        router.replace('/login');
+        router.replace('/authentication/sign-in/');
       }
     }, [isAuthenticated, router]);
 
