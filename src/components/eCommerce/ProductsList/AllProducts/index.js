@@ -1,6 +1,6 @@
 'use client';
 
-import { Table } from 'react-bootstrap';
+import { Table, Alert, Card, Button } from 'react-bootstrap';
 import Image from 'next/image';
 import Link from 'next/link';
 import Pagination from './Pagination';
@@ -8,12 +8,11 @@ import SearchForm from '../SearchForm';
 
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getProducts } from '@/features/productSlice';
+import { getProducts, deleteProduct } from '@/features/productSlice';
 
 const PublishedProducts = () => {
   const { products, page, total } = useSelector((state) => state.product);
   const dispatch = useDispatch();
-
   //Pagination and search
   const [limit, setLimit] = useState(10);
   const totalPages = Math.ceil(total / limit);
@@ -31,6 +30,11 @@ const PublishedProducts = () => {
   const handlePageChange = (newPage) => {
     dispatch(getProducts({ page: newPage, limit, search }));
   };
+
+  const handleDelete = (id) => {
+    dispatch(deleteProduct(id));
+  };
+
   return (
     <>
       <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-lg-4 mb-3">
@@ -106,18 +110,24 @@ const PublishedProducts = () => {
 
                   <td>
                     <div className="d-flex align-items-center gap-1">
-                      <Link href={'item.detailsLink'}>
+                      <Link href={'item.ecommerce/edit-product/'}>
                         <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
                           <span className="material-symbols-outlined fs-16 text-primary">visibility</span>
                         </button>
                       </Link>
+                      <Link href={`/ecommerce/edit-product/${item.slug}`}>
+                        <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                          <span className="material-symbols-outlined fs-16 text-body">edit</span>
+                        </button>
+                      </Link>
 
                       <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                        <span className="material-symbols-outlined fs-16 text-body">edit</span>
-                      </button>
-
-                      <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                        <span className="material-symbols-outlined text-danger fs-16">delete</span>
+                        <span
+                          className="material-symbols-outlined text-danger fs-16"
+                          onClick={() => handleDelete(item._id)}
+                        >
+                          delete
+                        </span>
                       </button>
                     </div>
                   </td>

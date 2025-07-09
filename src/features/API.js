@@ -27,7 +27,7 @@ export const getProducts = ({ limit = 10, skip = 0, search = '', category, sort,
 export const createProduct = (data) => axios.post('/product/add', data);
 // export const getProducts = () => axios.get('/product');
 export const getProduct = (slug) => axios.get(`/product/${slug}`);
-export const updateProduct = (id, data) => axios.put(`/product/${id}`, data);
+export const updateProduct = (slug, data) => axios.put(`/product/${slug}`, data);
 export const deleteProduct = (id) => axios.delete(`/product/${id}`);
 export const createProductReview = (id, review) => axios.post(`/product/${id}/reviews`, review);
 export const getTopProducts = () => axios.get('/product/top');
@@ -38,6 +38,13 @@ export const createCategory = (data) => axios.post('/api/categories', data);
 export const getCategory = (id) => axios.get(`/api/categories/${id}`);
 export const updateCategory = (id, data) => axios.put(`/api/categories/${id}`, data);
 export const deleteCategory = (id) => axios.delete(`/api/categories/${id}`);
+
+// Brand Api
+export const getAllBrands = () => axios.get('/');
+export const createBrand = (data) => axios.post('/api/Brand', data);
+export const getBrand = (id) => axios.get(`/api/Brand/${id}`);
+export const updateBrand = (id, data) => axios.put(`/api/Brand/${id}`, data);
+export const deleteBrand = (id) => axios.delete(`/api/Brand/${id}`);
 
 // Review Api
 export const createReview = (reviewData) => axios.post('/review', reviewData);

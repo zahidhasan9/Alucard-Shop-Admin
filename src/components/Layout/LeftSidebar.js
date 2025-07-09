@@ -65,7 +65,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Products Grid
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/products-list/"
@@ -74,7 +73,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Products List
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/product-details/"
@@ -83,7 +81,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Product Details
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/create-product/"
@@ -92,7 +89,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Create Product
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/edit-product/"
@@ -110,7 +106,14 @@ const LeftSidebar = ({ toogleActive }) => {
                       Cart
                     </Link>
                   </li>
-
+                  <li className="menu-item">
+                    <Link
+                      href="/ecommerce/category-brand/"
+                      className={`menu-link ${pathname === '/ecommerce/category-brand/' ? 'active' : ''}`}
+                    >
+                      Category Brand
+                    </Link>
+                  </li>
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/checkout/"
@@ -119,7 +122,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Checkout
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/orders/"
@@ -128,7 +130,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Orders
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/orders/details/"
@@ -137,7 +138,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Orders Details
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/orders/create/"
@@ -146,7 +146,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Create Order
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/orders/tracking/"
@@ -155,7 +154,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Order Tracking
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/customers/"
@@ -164,7 +162,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Customers
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/customers/details/"
@@ -173,7 +170,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Customer Details
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/categories/"
@@ -182,7 +178,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Categories
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/sellers/"
@@ -191,7 +186,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Sellers
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/sellers/details/"
@@ -200,7 +194,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Sellers Details
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/sellers/create/"
@@ -209,7 +202,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Create Seller
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/reviews/"
@@ -218,7 +210,6 @@ const LeftSidebar = ({ toogleActive }) => {
                       Reviews
                     </Link>
                   </li>
-
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/refunds/"

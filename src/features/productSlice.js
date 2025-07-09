@@ -15,7 +15,6 @@ import { toast } from '@/components/Ui/GlobalToast';
 // Create Product
 export const createProduct = createAsyncThunk('product/create', async (data, thunkAPI) => {
   try {
-    console.log('data', data);
     const res = await API.createProduct(data);
     return res.data;
   } catch (err) {
@@ -56,9 +55,13 @@ export const getProduct = createAsyncThunk('product/getOne', async (slug, thunkA
 });
 
 // Update Product
-export const updateProduct = createAsyncThunk('product/update', async ({ id, data }, thunkAPI) => {
+export const updateProduct = createAsyncThunk('product/update', async ({ slug, data }, thunkAPI) => {
   try {
-    const res = await API.updateProduct(id, data);
+    console.log('slug:', slug);
+    for (let [key, value] of data.entries()) {
+      console.log(`${key}:`, value);
+    }
+    const res = await API.updateProduct(slug, data);
     return res.data;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to update product');

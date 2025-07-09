@@ -1,13 +1,13 @@
 'use client';
 
-import CreateSeller from '@/components/eCommerce/Category-brand';
+import Categorybrand from '@/components/eCommerce/Category-brand';
 import { Breadcrumb } from 'react-bootstrap';
 
 export default function Page() {
   return (
     <>
       <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-        <h3 className="mb-0">Create Seller</h3>
+        <h3 className="mb-0">Category and Brand</h3>
 
         <Breadcrumb className="breadcrumb-page-list align-items-center mb-0 lh-1">
           <Breadcrumb.Item href="/dashboard/ecommerce/">
@@ -22,16 +22,12 @@ export default function Page() {
           </Breadcrumb.Item>
 
           <Breadcrumb.Item>
-            <span className="fw-medium">Seller</span>
-          </Breadcrumb.Item>
-
-          <Breadcrumb.Item active>
-            <span className="fw-medium">Create</span>
+            <span className="fw-medium">Category Brand</span>
           </Breadcrumb.Item>
         </Breadcrumb>
       </div>
 
-      <CreateSeller />
+      <Categorybrand />
     </>
   );
 }

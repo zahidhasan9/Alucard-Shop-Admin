@@ -3,6 +3,7 @@ import userReducer from '@/features/userSlice.js';
 import addressReducer from '@/features/addressSlice.js';
 import productSlice from '@/features/productSlice.js';
 import categorySlice from '@/features/categorySlice.js';
+import BrandSlice from '@/features/brandSlice.js';
 import SearchSlice from '@/features/SearchSlice.js';
 import reviewSlice from '@/features/reviewSlice.js';
 import CartSlice from '@/features/cartSlice.js';
@@ -15,6 +16,7 @@ const store = configureStore({
     product: productSlice,
     search: SearchSlice,
     category: categorySlice,
+    brand: BrandSlice,
     review: reviewSlice,
     cart: CartSlice,
     order: OrderSlice
