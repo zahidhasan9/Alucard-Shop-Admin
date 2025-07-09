@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as API from './API';
 // import toast from 'react-hot-toast';
-import toast from 'react-bootstrap/Toast';
+import { toast } from '@/components/Ui/GlobalToast';
 
 // const initialState = {
 //   products: [],
@@ -15,6 +15,7 @@ import toast from 'react-bootstrap/Toast';
 // Create Product
 export const createProduct = createAsyncThunk('product/create', async (data, thunkAPI) => {
   try {
+    console.log('data', data);
     const res = await API.createProduct(data);
     return res.data;
   } catch (err) {
@@ -122,7 +123,7 @@ const productSlice = createSlice({
       .addCase(createProduct.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.products.push(action.payload);
+        // state.products.push(action.payload);
         toast.success('Product created successfully');
       })
       .addCase(createProduct.rejected, (state, action) => {

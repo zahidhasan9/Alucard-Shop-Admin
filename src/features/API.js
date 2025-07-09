@@ -24,7 +24,7 @@ export const getProducts = ({ limit = 10, skip = 0, search = '', category, sort,
   axios.get('/product', {
     params: { limit, skip, search, category, sort, maxPrice, minPrice }
   });
-export const createProduct = (data) => axios.post('/product', data);
+export const createProduct = (data) => axios.post('/product/add', data);
 // export const getProducts = () => axios.get('/product');
 export const getProduct = (slug) => axios.get(`/product/${slug}`);
 export const updateProduct = (id, data) => axios.put(`/product/${id}`, data);

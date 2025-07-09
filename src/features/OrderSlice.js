@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as API from './API';
 // import toast from 'react-hot-toast';
-import toast from 'react-bootstrap/Toast';
+import { toast } from '@/components/Ui/GlobalToast';
 
 const initialState = {
   order: null,

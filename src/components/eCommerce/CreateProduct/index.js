@@ -1,19 +1,76 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Row, Col, Card, Form } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { createProduct } from '@/features/productSlice';
+import { getAllCategories } from '@/features/categorySlice';
 
 const CreateProduct = () => {
+  const { categories } = useSelector((state) => state.category);
+  const dispatch = useDispatch();
   const [previewImages, setPreviewImages] = useState([]);
+  const [selectedImages, setSelectedImages] = useState([]);
+  const [categoryid, setCategoryid] = useState();
+
+  const [form, setForm] = useState({
+    name: '',
+    description: '',
+    product_type: '',
+    brand: '',
+    category: '',
+    price: '',
+    oldPrice: '',
+    discount: '',
+    countInStock: ''
+  });
+
+  useEffect(() => {
+    dispatch(getAllCategories());
+  }, []);
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // const handleImageChange = (e) => {
+  //   const files = Array.from(e.target.files);
+  //   const validImages = files.filter((file) => file.type.startsWith('image/'));
+
+  //   const imageUrls = validImages.map((file) => URL.createObjectURL(file));
+  //   setPreviewImages((prev) => [...prev, ...imageUrls]);
+  //   // setSelectedImages((prev) => [...prev, ...validImages]);
+  //   setForm((prev) => ({ ...prev, images: [...prev.images, ...validImages] }));
+  // };
 
   const handleImageChange = (e) => {
-    const files = Array.from(e.target.files);
-    const imageUrls = files.filter((file) => file.type.startsWith('image/')).map((file) => URL.createObjectURL(file));
-
-    setPreviewImages(imageUrls);
+    const files = Array.from(e.target.files).filter((f) => f.type.startsWith('image/'));
+    setSelectedImages((prev) => [...prev, ...files]);
+    setPreviewImages((prev) => [...prev, ...files.map((file) => URL.createObjectURL(file))]);
   };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const formData = new FormData();
+    Object.entries(form).forEach(([key, value]) => {
+      formData.append(key, value); // Example: form.name, form.price etc.
+    });
+
+    // Ensure selectedImages is not empty
+    if (selectedImages.length > 0) {
+      selectedImages.forEach((file) => {
+        formData.append('images', file); // key must match with multer field
+      });
+      console.log('Selected Images:', selectedImages); // See if files exist
+    }
+    dispatch(createProduct(formData));
+  };
+
   return (
     <>
-      <Form>
+      <Form onSubmit={handleSubmit}>
         <Row>
           <Col lg={7} xxl={8}>
             <Card className="bg-white border-0 rounded-3 mb-4">
@@ -24,13 +81,20 @@ const CreateProduct = () => {
                   <Col sm={6} lg={6}>
                     <Form.Group className="mb-4">
                       <Form.Label className="label text-secondary">Product Title</Form.Label>
-                      <Form.Control type="text" className="h-55" placeholder="Enter product title" />
+                      <Form.Control
+                        name="name"
+                        value={form.name}
+                        onChange={handleChange}
+                        type="text"
+                        className="h-55"
+                        placeholder="Enter product title"
+                      />
                     </Form.Group>
                   </Col>
 
                   <Col sm={6} lg={6}>
                     <Form.Group className="mb-4">
-                      <Form.Label className="label text-secondary">Product Type</Form.Label>
+                      <Form.Label className="label text-secondary">Product Type (not set in backend)</Form.Label>
                       <Form.Select className="form-control h-55" aria-label="Default select example">
                         <option defaultValue="0">State</option>
                         <option defaultValue="1">Digital Product</option>
@@ -39,90 +103,90 @@ const CreateProduct = () => {
                     </Form.Group>
                   </Col>
 
-                  <Col sm={6} lg={6}>
+                  {/* <Col sm={6} lg={6}>
                     <Form.Group className="mb-4">
                       <Form.Label className="label text-secondary">SKU</Form.Label>
-                      <Form.Control type="text" className="h-55" placeholder="Enter SKU" />
+                      <Form.Control  type="text" className="h-55" placeholder="Enter SKU" />
                     </Form.Group>
-                  </Col>
-
-                  <Col sm={6} lg={6}>
-                    <Form.Group className="mb-4">
-                      <Form.Label className="label text-secondary">Product Type</Form.Label>
-                      <Form.Select className="form-control h-55" aria-label="Default select example">
-                        <option defaultValue="0">State</option>
-                        <option defaultValue="1">Emburo</option>
-                        <option defaultValue="2">Fediz</option>
-                        <option defaultValue="3">Debilop</option>
-                        <option defaultValue="4">Canin</option>
-                        <option defaultValue="5">Daxa</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
+                  </Col> */}
 
                   <Col sm={12} lg={12}>
                     <Form.Group className="mb-4">
                       <Form.Label className="label text-secondary fs-14">Product Description</Form.Label>
 
-                      <Form.Control as="textarea" rows={6} placeholder="Type description here..." />
+                      <Form.Control
+                        name="description"
+                        value={form.description}
+                        onChange={handleChange}
+                        as="textarea"
+                        rows={6}
+                        placeholder="Type description here..."
+                      />
                     </Form.Group>
                   </Col>
 
                   <Col sm={6} lg={6}>
                     <Form.Group className="mb-4">
                       <Form.Label className="label text-secondary">Regular Price</Form.Label>
-                      <Form.Control type="text" className="h-55" placeholder="Enter regular price" />
+                      <Form.Control
+                        name="price"
+                        value={form.price}
+                        onChange={handleChange}
+                        type="text"
+                        className="h-55"
+                        placeholder="Enter regular price"
+                      />
                     </Form.Group>
                   </Col>
 
                   <Col sm={6} lg={6}>
                     <Form.Group className="mb-4">
                       <Form.Label className="label text-secondary">Sale Price</Form.Label>
-                      <Form.Control type="text" className="h-55" placeholder="Enter sale price" />
+                      <Form.Control
+                        name="oldPrice"
+                        value={form.oldPrice}
+                        onChange={handleChange}
+                        type="text"
+                        className="h-55"
+                        placeholder="Enter sale price"
+                      />
                     </Form.Group>
                   </Col>
 
-                  <Col sm={6} lg={6}>
+                  {/* <Col sm={6} lg={6}>
                     <Form.Group className="mb-4">
                       <Form.Label className="label text-secondary">Publish Schedule</Form.Label>
                       <Form.Control type="date" className="h-55" />
                     </Form.Group>
-                  </Col>
+                  </Col> */}
 
                   <Col sm={6} lg={6}>
                     <Form.Group className="mb-4">
                       <Form.Label className="label text-secondary">Product in Stock</Form.Label>
-                      <Form.Control type="text" className="h-55" placeholder="Enter product in stock" />
+                      <Form.Control
+                        name="countInStock"
+                        value={form.countInStock}
+                        onChange={handleChange}
+                        type="text"
+                        className="h-55"
+                        placeholder="Enter product in stock"
+                      />
                     </Form.Group>
                   </Col>
 
-                  <Col sm={6} lg={6}>
-                    <Form.Group className="mb-4">
-                      <Form.Label className="label text-secondary">Product ID</Form.Label>
-                      <Form.Control type="text" className="h-55" placeholder="Enter product id" />
-                    </Form.Group>
-                  </Col>
-
-                  <Col sm={12} lg={6}>
+                  {/* <Col sm={12} lg={6}>
                     <Form.Group className="mb-4">
                       <Form.Label className="label text-secondary">Discount / Offer</Form.Label>
-                      <Form.Control type="text" className="h-55" placeholder="Enter discount / Offer" />
+                      <Form.Control
+                        name="discount"
+                        value={form.discount}
+                        onChange={handleChange}
+                        type="text"
+                        className="h-55"
+                        placeholder="Enter discount / Offer"
+                      />
                     </Form.Group>
-                  </Col>
-
-                  <Col sm={6} lg={6}>
-                    <Form.Group className="mb-4">
-                      <Form.Label className="label text-secondary">Available Date</Form.Label>
-                      <Form.Control type="date" className="h-55" />
-                    </Form.Group>
-                  </Col>
-
-                  <Col sm={6} lg={6}>
-                    <Form.Group className="mb-4">
-                      <Form.Label className="label text-secondary">End Date</Form.Label>
-                      <Form.Control type="date" className="h-55" />
-                    </Form.Group>
-                  </Col>
+                  </Col> */}
 
                   <Col sm={12} lg={12}>
                     <Form.Group className="mb-4">
@@ -175,32 +239,26 @@ const CreateProduct = () => {
                   <Col sm={6} lg={12}>
                     <Form.Group className="mb-4">
                       <Form.Label className="label text-secondary">Category</Form.Label>
-                      <Form.Select className="form-control h-55" aria-label="Default select example">
+
+                      <Form.Select
+                        name="category"
+                        onChange={handleChange}
+                        className="form-control h-55"
+                        aria-label="Default select example"
+                      >
                         <option defaultValue="0">Select</option>
-                        <option defaultValue="1">watch</option>
-                        <option defaultValue="2">headphone</option>
-                        <option defaultValue="3">mobile</option>
-                        <option defaultValue="4">speaker</option>
+                        {categories?.map((item, idx) => (
+                          <option key={idx} value={item?._id}>
+                            {item?.name}
+                          </option>
+                        ))}
                       </Form.Select>
                     </Form.Group>
                   </Col>
 
                   <Col sm={6} lg={12}>
                     <Form.Group className="mb-4">
-                      <Form.Label className="label text-secondary">Vendor</Form.Label>
-                      <Form.Select className="form-control h-55" aria-label="Default select example">
-                        <option defaultValue="0">Select</option>
-                        <option defaultValue="1">Dennis Matthews</option>
-                        <option defaultValue="2">Susan Rader</option>
-                        <option defaultValue="3">Douglas Harvey</option>
-                        <option defaultValue="4">John Valdez</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
-
-                  <Col sm={6} lg={12}>
-                    <Form.Group className="mb-4">
-                      <Form.Label className="label text-secondary">Collection</Form.Label>
+                      <Form.Label className="label text-secondary">Brand</Form.Label>
                       <Form.Select className="form-control h-55" aria-label="Default select example">
                         <option defaultValue="0">Select</option>
                         <option defaultValue="1">Collection 1</option>
@@ -210,24 +268,11 @@ const CreateProduct = () => {
                       </Form.Select>
                     </Form.Group>
                   </Col>
-
-                  <Col sm={6} lg={12}>
-                    <Form.Group className="mb-0">
-                      <Form.Label className="label text-secondary">Tags</Form.Label>
-                      <Form.Select className="form-control h-55" aria-label="Default select example">
-                        <option defaultValue="0">Select</option>
-                        <option defaultValue="1">watch</option>
-                        <option defaultValue="2">headphone</option>
-                        <option defaultValue="3">mobile</option>
-                        <option defaultValue="4">speaker</option>
-                      </Form.Select>
-                    </Form.Group>
-                  </Col>
                 </Row>
               </Card.Body>
             </Card>
 
-            <Card className="bg-white border-0 rounded-3 mb-4">
+            {/* <Card className="bg-white border-0 rounded-3 mb-4">
               <Card.Body className="p-4">
                 <h3 className="mb-3 mb-lg-4">Other Options</h3>
 
@@ -241,7 +286,7 @@ const CreateProduct = () => {
                   <textarea rows="6" className="form-control" placeholder="Type here...."></textarea>
                 </Form.Group>
               </Card.Body>
-            </Card>
+            </Card> */}
           </Col>
         </Row>
 
