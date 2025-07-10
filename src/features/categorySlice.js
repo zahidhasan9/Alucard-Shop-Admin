@@ -52,10 +52,10 @@ export const updateCategory = createAsyncThunk('category/update', async ({ id, d
 });
 
 // Delete Category
-export const deleteCategory = createAsyncThunk('category/delete', async (id, thunkAPI) => {
+export const deleteCategory = createAsyncThunk('category/delete', async (slug, thunkAPI) => {
   try {
-    await API.deleteCategory(id);
-    return id;
+    await API.deleteCategory(slug);
+    return slug;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to delete category');
   }
@@ -81,7 +81,7 @@ const categorySlice = createSlice({
       .addCase(createCategory.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.categories.push(action.payload);
+        // state.categories.push(action.payload);
         toast.success('Category created successfully');
       })
       .addCase(createCategory.rejected, (state, action) => {
@@ -102,7 +102,7 @@ const categorySlice = createSlice({
       .addCase(getAllCategories.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        toast.error(action.payload);
+        // toast.error(action.payload);
       })
 
       // Get One

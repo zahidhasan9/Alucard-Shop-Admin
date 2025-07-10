@@ -34,17 +34,17 @@ export const getTopProducts = () => axios.get('/product/top');
 
 // category Api
 export const getAllCategories = () => axios.get('/category');
-export const createCategory = (data) => axios.post('/api/categories', data);
+export const createCategory = (data) => axios.post('/category/', data);
 export const getCategory = (id) => axios.get(`/api/categories/${id}`);
 export const updateCategory = (id, data) => axios.put(`/api/categories/${id}`, data);
-export const deleteCategory = (id) => axios.delete(`/api/categories/${id}`);
+export const deleteCategory = (slug) => axios.delete(`/category/${slug}`);
 
 // Brand Api
-export const getAllBrands = () => axios.get('/');
-export const createBrand = (data) => axios.post('/api/Brand', data);
+export const getAllBrands = () => axios.get('/brand');
+export const createBrand = (data) => axios.post('/brand', data);
 export const getBrand = (id) => axios.get(`/api/Brand/${id}`);
 export const updateBrand = (id, data) => axios.put(`/api/Brand/${id}`, data);
-export const deleteBrand = (id) => axios.delete(`/api/Brand/${id}`);
+export const deleteBrand = (slug) => axios.delete(`/Brand/${slug}`);
 
 // Review Api
 export const createReview = (reviewData) => axios.post('/review', reviewData);

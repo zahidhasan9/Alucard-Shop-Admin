@@ -52,10 +52,10 @@ export const updateBrand = createAsyncThunk('Brand/update', async ({ id, data },
 });
 
 // Delete Brand
-export const deleteBrand = createAsyncThunk('Brand/delete', async (id, thunkAPI) => {
+export const deleteBrand = createAsyncThunk('Brand/delete', async (slug, thunkAPI) => {
   try {
-    await API.deleteBrand(id);
-    return id;
+    await API.deleteBrand(slug);
+    return slug;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to delete Brand');
   }
@@ -102,7 +102,7 @@ const BrandSlice = createSlice({
       .addCase(getAllBrands.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        toast.error(action.payload);
+        // toast.error(action.payload);
       })
 
       // Get One
