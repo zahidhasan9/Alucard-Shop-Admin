@@ -144,9 +144,9 @@ const RecentLeads = () => {
                 </thead>
                 <tbody>
                   {Brands && Brands.length > 0 ? (
-                    Brands.map((brand) => (
+                    Brands?.map((brand) => (
                       <tr key={brand._id}>
-                        <td>{brand.name}</td>
+                        <td>{brand?.name}</td>
                         <td>{'|'}</td>
                         <td>
                           <button

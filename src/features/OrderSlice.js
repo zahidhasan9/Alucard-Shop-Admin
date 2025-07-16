@@ -10,6 +10,10 @@ const initialState = {
   lastOrder: null,
   loading: false,
   error: null,
+  total: 0,
+  maxLimit: 0,
+  maxSkip: 0,
+  page: 1,
   success: false
 };
 
@@ -73,12 +77,22 @@ export const deliverOrder = createAsyncThunk('order/deliver', async (orderId, th
 });
 
 // Get All Orders (admin)
-export const fetchAllOrders = createAsyncThunk('order/fetchAllOrders', async (_, thunkAPI) => {
+export const fetchAllOrders = createAsyncThunk('order/fetchAllOrders', async (skip, limit, search, thunkAPI) => {
   try {
-    const res = await API.getAllOrders();
+    const res = await API.getAllOrders(skip, limit, search);
     return res.data;
   } catch (err) {
     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Fetch failed');
+  }
+});
+
+// Delete Order
+export const deleteOrder = createAsyncThunk('order/delete', async (orderId, thunkAPI) => {
+  try {
+    await API.deleteOrder(orderId);
+    return orderId;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to delete order');
   }
 });
 
@@ -184,13 +198,29 @@ const orderSlice = createSlice({
         toast.error(action.payload);
       })
 
+      // Delete
+      .addCase(deleteOrder.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        // state.products = state.products.filter((p) => p._id !== action.payload);
+        toast.success('Order deleted successfully');
+      })
+      .addCase(deleteOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        toast.error(action.payload);
+      })
+
       // Fetch All Orders (admin)
       .addCase(fetchAllOrders.pending, (state) => {
         state.loading = true;
       })
       .addCase(fetchAllOrders.fulfilled, (state, action) => {
         state.loading = false;
-        state.orders = action.payload;
+        state.orders = action.payload.orders;
+        state.total = action.payload.total;
+        state.maxLimit = action.payload.maxLimit;
+        state.maxSkip = action.payload.maxSkip;
       })
       .addCase(fetchAllOrders.rejected, (state, action) => {
         state.loading = false;

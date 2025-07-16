@@ -57,10 +57,10 @@ export const getProduct = createAsyncThunk('product/getOne', async (slug, thunkA
 // Update Product
 export const updateProduct = createAsyncThunk('product/update', async ({ slug, data }, thunkAPI) => {
   try {
-    console.log('slug:', slug);
-    for (let [key, value] of data.entries()) {
-      console.log(`${key}:`, value);
-    }
+    // console.log('slug:', slug);
+    // for (let [key, value] of data.entries()) {
+    //   console.log(`${key}:`, value);
+    // }
     const res = await API.updateProduct(slug, data);
     return res.data;
   } catch (err) {

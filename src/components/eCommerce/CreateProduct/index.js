@@ -322,8 +322,10 @@ import { Row, Col, Card, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { createProduct } from '@/features/productSlice';
 import { getAllCategories } from '@/features/categorySlice';
+import { getAllBrands } from '@/features/brandSlice';
 
 const CreateProduct = () => {
+  const { Brands } = useSelector((state) => state.brand);
   const { categories } = useSelector((state) => state.category);
   const dispatch = useDispatch();
   const [previewImages, setPreviewImages] = useState([]);
@@ -362,13 +364,11 @@ const CreateProduct = () => {
 
   useEffect(() => {
     dispatch(getAllCategories());
+    dispatch(getAllBrands());
   }, []);
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({
-      ...prev,
-      [name]: value
-    }));
+    setForm((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleRemoveImage = (index) => {
@@ -493,7 +493,7 @@ const CreateProduct = () => {
 
                   <Col sm={6} lg={6}>
                     <Form.Group className="mb-4">
-                      <Form.Label className="label text-secondary">Regular Price</Form.Label>
+                      <Form.Label className="label text-secondary"> Price</Form.Label>
                       <Form.Control
                         name="price"
                         value={form.price}
@@ -507,7 +507,7 @@ const CreateProduct = () => {
 
                   <Col sm={6} lg={6}>
                     <Form.Group className="mb-4">
-                      <Form.Label className="label text-secondary">Sale Price</Form.Label>
+                      <Form.Label className="label text-secondary">Old Price</Form.Label>
                       <Form.Control
                         name="oldPrice"
                         value={form.oldPrice}
@@ -677,12 +677,13 @@ const CreateProduct = () => {
                   <Col sm={6} lg={12}>
                     <Form.Group className="mb-4">
                       <Form.Label className="label text-secondary">Brand</Form.Label>
-                      <Form.Select className="form-control h-55" aria-label="Default select example">
+                      <Form.Select className="form-control h-55" name="brand" onChange={handleChange}>
                         <option defaultValue="0">Select</option>
-                        <option defaultValue="1">Collection 1</option>
-                        <option defaultValue="2">Collection 2</option>
-                        <option defaultValue="3">Collection 3</option>
-                        <option defaultValue="4">Collection 4</option>
+                        {Brands?.map((item, idx) => (
+                          <option key={idx} value={item?._id}>
+                            {item?.name}
+                          </option>
+                        ))}
                       </Form.Select>
                     </Form.Group>
                   </Col>

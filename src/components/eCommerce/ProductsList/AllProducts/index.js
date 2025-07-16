@@ -1,6 +1,6 @@
 'use client';
 
-import { Table, Alert, Card, Button } from 'react-bootstrap';
+import { Table, Modal, Button } from 'react-bootstrap';
 import Image from 'next/image';
 import Link from 'next/link';
 import Pagination from './Pagination';
@@ -13,6 +13,7 @@ import { getProducts, deleteProduct } from '@/features/productSlice';
 const PublishedProducts = () => {
   const { products, page, total } = useSelector((state) => state.product);
   const dispatch = useDispatch();
+
   //Pagination and search
   const [limit, setLimit] = useState(10);
   const totalPages = Math.ceil(total / limit);
@@ -31,10 +32,27 @@ const PublishedProducts = () => {
     dispatch(getProducts({ page: newPage, limit, search }));
   };
 
-  const handleDelete = (id) => {
-    dispatch(deleteProduct(id));
+  // Delete‑confirmation modal state
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  // Show confirmation modal first
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setShowConfirm(true);
   };
 
+  // User confirmed deletion
+  const confirmDelete = () => {
+    if (deleteId) dispatch(deleteProduct(deleteId));
+    setShowConfirm(false);
+    setDeleteId(null);
+  };
+
+  // User canceled deletion
+  const cancelDelete = () => {
+    setShowConfirm(false);
+    setDeleteId(null);
+  };
   return (
     <>
       <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-lg-4 mb-3">
@@ -124,7 +142,7 @@ const PublishedProducts = () => {
                       <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
                         <span
                           className="material-symbols-outlined text-danger fs-16"
-                          onClick={() => handleDelete(item._id)}
+                          onClick={() => handleDeleteClick(item._id)}
                         >
                           delete
                         </span>
@@ -140,6 +158,22 @@ const PublishedProducts = () => {
         {/* Pagination */}
         <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
       </div>
+
+      {/* Confirm‑delete modal */}
+      <Modal show={showConfirm} onHide={cancelDelete} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Product</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this product? This action cannot be undone.</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={cancelDelete}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={confirmDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

@@ -1,116 +1,64 @@
-"use client";
+'use client';
 
-import { Card, Table } from "react-bootstrap";
-import Image from "next/image";
-import Link from "next/link";
-import Pagination from "./Pagination";
-import SearchForm from "./SearchForm";
+import { Card, Modal, Table, Button } from 'react-bootstrap';
+import Link from 'next/link';
+import Pagination from './Pagination';
+import SearchForm from './SearchForm';
 
-const ordersData = [
-  {
-    orderID: "#JAN-2345",
-    customerImg: "/images/user-1.jpg",
-    customerName: "Sarah Johnson",
-    items: 120,
-    created: "12 Jun 2024",
-    total: "$10,490",
-    vendor: "Dennis Matthews",
-    status: "shipped",
-  },
-  {
-    orderID: "#JAN-1323",
-    customerImg: "/images/user-2.jpg",
-    customerName: "Michael Smith",
-    items: 62,
-    created: "11 Jun 2024",
-    total: "$6,575",
-    vendor: "Kathryn Turner",
-    status: "confirmed",
-  },
-  {
-    orderID: "#DEC-1234",
-    customerImg: "/images/user-3.jpg",
-    customerName: "Emily Brown",
-    items: 49,
-    created: "10 Jun 2024",
-    total: "$12,870",
-    vendor: "John Valdez",
-    status: "pending",
-  },
-  {
-    orderID: "#DEC-3567",
-    customerImg: "/images/user-4.jpg",
-    customerName: "Jason Lee",
-    items: 25,
-    created: "09 Jun 2024",
-    total: "$7,895",
-    vendor: "Douglas Harvey",
-    status: "shipped",
-  },
-  {
-    orderID: "#DEC-1098",
-    customerImg: "/images/user-5.jpg",
-    customerName: "Ashley Davis",
-    items: 82,
-    created: "08 Jun 2024",
-    total: "$4,680",
-    vendor: "Susan Rader",
-    status: "rejected",
-  },
-  {
-    orderID: "#JAN-2345",
-    customerImg: "/images/user-1.jpg",
-    customerName: "Sarah Johnson",
-    items: 120,
-    created: "12 Jun 2024",
-    total: "$10,490",
-    vendor: "Dennis Matthews",
-    status: "shipped",
-  },
-  {
-    orderID: "#JAN-1323",
-    customerImg: "/images/user-2.jpg",
-    customerName: "Michael Smith",
-    items: 62,
-    created: "11 Jun 2024",
-    total: "$6,575",
-    vendor: "Kathryn Turner",
-    status: "confirmed",
-  },
-  {
-    orderID: "#DEC-1234",
-    customerImg: "/images/user-3.jpg",
-    customerName: "Emily Brown",
-    items: 49,
-    created: "10 Jun 2024",
-    total: "$12,870",
-    vendor: "John Valdez",
-    status: "pending",
-  },
-  {
-    orderID: "#DEC-3567",
-    customerImg: "/images/user-4.jpg",
-    customerName: "Jason Lee",
-    items: 25,
-    created: "09 Jun 2024",
-    total: "$7,895",
-    vendor: "Douglas Harvey",
-    status: "shipped",
-  },
-];
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAllOrders, deleteOrder } from '@/features/OrderSlice';
 
 const OrdersTable = () => {
+  const { orders, total, maxLimit } = useSelector((state) => state.order);
+  const dispatch = useDispatch();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState('');
+
+  const skip = (page - 1) * maxLimit;
+
+  const handlePageChange = (newPage) => {
+    setPage(newPage);
+  };
+
+  useEffect(() => {
+    dispatch(fetchAllOrders({ skip, limit: maxLimit, search }));
+  }, [dispatch, skip, maxLimit, search]);
+
+  // Delete‑confirmation modal state
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [deleteId, setDeleteId] = useState(null);
+  // Show confirmation modal first
+  const handleDeleteClick = (id) => {
+    setDeleteId(id);
+    setShowConfirm(true);
+  };
+
+  // User confirmed deletion
+  const confirmDelete = () => {
+    if (deleteId) dispatch(deleteOrder(deleteId));
+
+    setShowConfirm(false);
+    setDeleteId(null);
+    setTimeout(() => {
+      dispatch(fetchAllOrders({ skip, limit: maxLimit, search }));
+    }, 1000);
+  };
+
+  // User canceled deletion
+  const cancelDelete = () => {
+    setShowConfirm(false);
+    setDeleteId(null);
+  };
+
   return (
     <>
       <Card className="bg-white border-0 rounded-3 mb-4">
         <Card.Body className="p-4">
           <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-lg-4 mb-3">
-            <SearchForm />
+            <SearchForm searchTerm={search} onSearchChange={setSearch} />
 
-            <Link
-              href="#"
-              className="btn btn-outline-primary py-1 px-2 px-sm-4 fs-14 fw-medium rounded-3 hover-bg"
-            >
+            <Link href="#" className="btn btn-outline-primary py-1 px-2 px-sm-4 fs-14 fw-medium rounded-3 hover-bg">
               <span className="py-sm-1 d-block">
                 <i className="ri-add-line d-none d-sm-inline-block fs-18"></i>
                 <span>Add New Order</span>
@@ -128,69 +76,59 @@ const OrdersTable = () => {
                     <th scope="col">Items</th>
                     <th scope="col">Created</th>
                     <th scope="col">Total</th>
-                    <th scope="col">Vendor</th>
                     <th scope="col">Status</th>
                     <th scope="col">Action</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {ordersData &&
-                    ordersData.slice(0, 10).map((value, i) => (
+                  {orders &&
+                    orders?.map((value, i) => (
                       <tr key={i}>
-                        <td>{value.orderID}</td>
+                        <td>{value.orderId}</td>
 
                         <td>
                           <div className="d-flex align-items-center">
-                            <Image
-                              src={value.customerImg}
-                              className="wh-40 rounded-3"
-                              alt="product-1"
-                              width={40}
-                              height={40}
-                            />
                             <div className="ms-2 ps-1">
-                              <h6 className="fw-medium fs-14 m-0">
-                                {value.customerName}
-                              </h6>
+                              <h6 className="fw-medium fs-14 m-0">{value?.user?.firstName}</h6>
                             </div>
                           </div>
                         </td>
 
-                        <td>{value.items}</td>
-
-                        <td>{value.created}</td>
-
-                        <td>{value.total}</td>
-
-                        <td>{value.vendor}</td>
+                        <td>{value?.orderItems?.length}</td>
 
                         <td>
-                          <span
-                            className={`badge bg-opacity-10 p-2 fs-12 fw-normal text-capitalize ${value.status}`}
-                          >
-                            {value.status}
+                          {new Date(value.createdAt).toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            year: 'numeric'
+                          })}
+                        </td>
+
+                        <td>{value.totalPrice} tk</td>
+
+                        <td>
+                          {/* 'confirmed', 'pending', 'shipped'  use in class for change bg */}
+                          <span className={`badge bg-opacity-10 p-2 fs-12 fw-normal text-capitalize ${value.Delivery}`}>
+                            {value.Delivery}
                           </span>
                         </td>
 
                         <td>
                           <div className="d-flex align-items-center gap-1">
                             <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                              <span className="material-symbols-outlined fs-16 text-primary">
-                                visibility
-                              </span>
+                              <span className="material-symbols-outlined fs-16 text-primary">visibility</span>
                             </button>
 
                             <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                              <span className="material-symbols-outlined fs-16 text-body">
-                                edit
-                              </span>
+                              <span className="material-symbols-outlined fs-16 text-body">edit</span>
                             </button>
 
-                            <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                              <span className="material-symbols-outlined fs-16 text-danger">
-                                delete
-                              </span>
+                            <button
+                              onClick={() => handleDeleteClick(value.orderId)}
+                              className="ps-0 border-0 bg-transparent lh-1 position-relative top-2"
+                            >
+                              <span className="material-symbols-outlined fs-16 text-danger">delete</span>
                             </button>
                           </div>
                         </td>
@@ -201,10 +139,25 @@ const OrdersTable = () => {
             </div>
 
             {/* Pagination */}
-            <Pagination />
+            <Pagination currentPage={page} totalItems={total} itemsPerPage={maxLimit} onPageChange={handlePageChange} />
           </div>
         </Card.Body>
       </Card>
+      {/* Confirm‑delete modal */}
+      <Modal show={showConfirm} onHide={cancelDelete} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Product</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>Are you sure you want to delete this product? This action cannot be undone.</Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={cancelDelete}>
+            Cancel
+          </Button>
+          <Button variant="danger" onClick={confirmDelete}>
+            Delete
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 };

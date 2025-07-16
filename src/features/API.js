@@ -67,5 +67,10 @@ export const getLastOrder = () => axios.get('/order/last-orders'); // Get user's
 export const getOrderById = (orderId) => axios.get(`/order/${orderId}`); // Get single order by ID
 export const payOrder = (orderId, paymentResult) => axios.put(`/order/${orderId}/pay`, paymentResult); // Update order to paid
 export const deliverOrder = (orderId) => axios.put(`/order/${orderId}/deliver`); // Update order to delivered (admin only)
+export const deleteOrder = (orderId) => axios.delete(`/order/${orderId}`);
 // Get all orders (admin only)
-export const getAllOrders = () => axios.get('/orders');
+// export const getAllOrders = () => axios.get('/order');
+export const getAllOrders = ({ skip, limit, search }) =>
+  axios.get('/order', {
+    params: { skip, limit, search }
+  });

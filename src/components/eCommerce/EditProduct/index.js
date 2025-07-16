@@ -4,8 +4,10 @@ import { Row, Col, Card, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { getProduct, updateProduct } from '@/features/productSlice';
 import { getAllCategories } from '@/features/categorySlice';
+import { getAllBrands } from '@/features/brandSlice';
 
 const EditProduct = ({ slug }) => {
+  const { Brands } = useSelector((state) => state.brand);
   const { categories } = useSelector((state) => state.category);
   const { product } = useSelector((state) => state.product);
   const dispatch = useDispatch();
@@ -28,6 +30,7 @@ const EditProduct = ({ slug }) => {
   // Load Product
   useEffect(() => {
     dispatch(getAllCategories());
+    dispatch(getAllBrands());
     if (slug) {
       dispatch(getProduct(slug));
     }
@@ -43,8 +46,8 @@ const EditProduct = ({ slug }) => {
         price: product.price || '',
         countInStock: product.countInStock || '',
         description: product.description || '',
-        category: product.category?.name || '',
-        brand: product.brand || '',
+        category: product.category?._id || '',
+        brand: product.brand?._id || '',
         variants: product.variants || [],
         details: product.details || []
       });
@@ -82,10 +85,15 @@ const EditProduct = ({ slug }) => {
   // Handle image select
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    setSelectedImages(files);
+    setSelectedImages((prev) => [...prev, ...files]);
 
     const previews = files.map((file) => URL.createObjectURL(file));
-    setPreviewImages(previews);
+    setPreviewImages((prev) => [...prev, ...previews]);
+  };
+
+  const handleRemoveImage = (index) => {
+    setPreviewImages((prev) => prev.filter((_, i) => i !== index));
+    setSelectedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   // Handle submit
@@ -251,19 +259,34 @@ const EditProduct = ({ slug }) => {
                         </div>
                         {/* Preview */}
                         {previewImages.length > 0 && (
-                          <div className="mt-3 d-flex flex-wrap gap-2">
+                          <div className="mt-3 d-flex flex-wrap justify-content-center gap-2">
                             {previewImages.map((img, idx) => (
-                              <div
-                                key={idx}
-                                className="border rounded"
-                                style={{ width: 80, height: 80, overflow: 'hidden' }}
-                              >
+                              <div key={idx} className="position-relative" style={{ width: '80px', height: '80px' }}>
                                 <img
                                   src={img}
-                                  alt="Preview"
-                                  className="img-fluid w-100 h-100"
-                                  style={{ objectFit: 'cover' }}
+                                  alt={`Preview ${idx + 1}`}
+                                  className="img-thumbnail rounded"
+                                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                 />
+                                <span
+                                  onClick={() => handleRemoveImage(idx)}
+                                  style={{
+                                    position: 'absolute',
+                                    top: '-6px',
+                                    right: '-6px',
+                                    background: 'white',
+                                    color: 'red',
+                                    borderRadius: '50%',
+                                    fontWeight: 'bold',
+                                    padding: '0 6px',
+                                    fontSize: '16px',
+                                    cursor: 'pointer',
+                                    zIndex: 2,
+                                    lineHeight: 1
+                                  }}
+                                >
+                                  x
+                                </span>
                               </div>
                             ))}
                           </div>
@@ -313,7 +336,7 @@ const EditProduct = ({ slug }) => {
           <Col lg={5} xxl={4}>
             <Card className="bg-white border-0 rounded-3 mb-4">
               <Card.Body className="p-4">
-                <h3 className="mb-3 mb-lg-4">Product Category & Tags</h3>
+                <h3 className="mb-3 mb-lg-4">Product Category & Brand</h3>
 
                 <Row>
                   <Col sm={6} lg={12}>
@@ -326,7 +349,7 @@ const EditProduct = ({ slug }) => {
                         className="form-control h-55"
                         aria-label="Default select example"
                       >
-                        <option defaultValue="0">{form.category}</option>
+                        <option>{product?.category?.name}</option>
                         {categories?.map((item, idx) => (
                           <option key={idx} value={item?._id}>
                             {item?.name}
@@ -340,11 +363,12 @@ const EditProduct = ({ slug }) => {
                     <Form.Group className="mb-4">
                       <Form.Label className="label text-secondary">Brand</Form.Label>
                       <Form.Select className="form-control h-55" aria-label="Default select example">
-                        <option defaultValue="0">Select</option>
-                        <option defaultValue="1">Dennis Matthews</option>
-                        <option defaultValue="2">Susan Rader</option>
-                        <option defaultValue="3">Douglas Harvey</option>
-                        <option defaultValue="4">John Valdez</option>
+                        <option>{product?.brand?.name}</option>
+                        {Brands?.map((item, idx) => (
+                          <option key={idx} value={item?._id}>
+                            {item?.name}
+                          </option>
+                        ))}
                       </Form.Select>
                     </Form.Group>
                   </Col>
@@ -405,7 +429,7 @@ const EditProduct = ({ slug }) => {
           <button className="btn btn-danger py-2 px-4 fw-medium fs-16 text-white">Cancel</button>
           <button className="btn btn-primary py-2 px-4 fw-medium fs-16">
             {' '}
-            <i className="ri-add-line text-white fw-medium"></i> Create Product
+            <i className="ri-add-line text-white fw-medium"></i> Update Product
           </button>
         </div>
       </Form>

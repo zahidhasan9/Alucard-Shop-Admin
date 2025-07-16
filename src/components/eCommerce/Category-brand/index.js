@@ -95,7 +95,7 @@ const CreateCatandBrand = () => {
             <Row>
               <Col sm={6} lg={4}>
                 <Form.Group className="mb-4">
-                  <Form.Label className="label text-secondary">Seller Name</Form.Label>
+                  <Form.Label className="label text-secondary">Brand Name</Form.Label>
                   <Form.Control
                     name="name"
                     value={brand.name}
