@@ -120,9 +120,11 @@ const OrdersTable = () => {
                               <span className="material-symbols-outlined fs-16 text-primary">visibility</span>
                             </button>
 
-                            <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                              <span className="material-symbols-outlined fs-16 text-body">edit</span>
-                            </button>
+                            <Link href={`/ecommerce/orders/${value.orderId}`}>
+                              <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                <span className="material-symbols-outlined fs-16 text-body">edit</span>
+                              </button>
+                            </Link>
 
                             <button
                               onClick={() => handleDeleteClick(value.orderId)}
