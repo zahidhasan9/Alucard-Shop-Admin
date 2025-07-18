@@ -76,6 +76,26 @@ export const deliverOrder = createAsyncThunk('order/deliver', async (orderId, th
   }
 });
 
+// Update Delivery Status
+export const updateDeliveryStatus = createAsyncThunk('order/deliver/status', async ({ orderId, status }, thunkAPI) => {
+  try {
+    const res = await API.updateDeliveryStatus(orderId, status);
+    return res.data;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Delivery update failed');
+  }
+});
+
+// Reset Delivery Status
+export const resetDeliveryStatus = createAsyncThunk('order/resetDeliveryStatus', async ({ orderId }, thunkAPI) => {
+  try {
+    const res = await API.resetDeliveryStatus(orderId);
+    return res.data;
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Fetch failed');
+  }
+});
+
 // Get All Orders (admin)
 export const fetchAllOrders = createAsyncThunk('order/fetchAllOrders', async (skip, limit, search, thunkAPI) => {
   try {
@@ -193,6 +213,38 @@ const orderSlice = createSlice({
         toast.success('Order delivered');
       })
       .addCase(deliverOrder.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        toast.error(action.payload);
+      })
+
+      // resetDeliveryStatus
+      .addCase(resetDeliveryStatus.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(resetDeliveryStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+        toast.success(`${action.payload.message}`);
+      })
+      .addCase(resetDeliveryStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        // toast.error(action.payload);
+      })
+
+      // Update Delivery Status
+
+      .addCase(updateDeliveryStatus.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(updateDeliveryStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        state.order = action.payload;
+        state.success = true;
+        toast.success('Order status Updated');
+      })
+      .addCase(updateDeliveryStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         toast.error(action.payload);
