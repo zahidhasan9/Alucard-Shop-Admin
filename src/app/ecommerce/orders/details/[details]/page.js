@@ -1,19 +1,20 @@
-"use client";
+'use client';
 
-import { Row, Col, Breadcrumb } from "react-bootstrap";
+import { Row, Col, Breadcrumb } from 'react-bootstrap';
 import TrackingID from '@/components/eCommerce/Orders/OrderDetails/TrackingID';
 import RecentOrders from '@/components/eCommerce/Orders/OrderDetails/RecentOrders';
 import OrderSummary from '@/components/eCommerce/Orders/OrderDetails/OrderSummary';
 import BillingDetails from '@/components/eCommerce/Orders/OrderDetails/BillingDetails';
-import ShippingDetails from '@/components/eCommerce/Orders/OrderDetails/ShippingDetails';
 import DeliveryDetails from '@/components/eCommerce/Orders/OrderDetails/DeliveryDetails';
+import { useParams } from 'next/navigation';
 
 export default function Page() {
+  const { details } = useParams();
   return (
     <>
       <div className="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
         <h3 className="mb-0">Order Details</h3>
- 
+
         <Breadcrumb className="breadcrumb-page-list align-items-center mb-0 lh-1">
           <Breadcrumb.Item href="/dashboard/ecommerce/">
             <div className="d-flex align-items-center text-decoration-none">
@@ -38,27 +39,23 @@ export default function Page() {
 
       <Row>
         <Col lg={7} xxl={8}>
-          <TrackingID />
+          <TrackingID details={details} />
 
-          <RecentOrders />
+          <RecentOrders details={details} />
         </Col>
 
         <Col lg={5} xxl={4}>
-          <OrderSummary />
+          <OrderSummary details={details} />
         </Col>
       </Row>
 
       <Row>
         <Col md={6} xl={6} xxl={4}>
-          <BillingDetails />
+          <BillingDetails details={details} />
         </Col>
 
         <Col md={6} xl={6} xxl={4}>
-          <ShippingDetails />
-        </Col>
-
-        <Col md={6} xl={6} xxl={4}>
-          <DeliveryDetails />
+          <DeliveryDetails details={details} />
         </Col>
       </Row>
     </>

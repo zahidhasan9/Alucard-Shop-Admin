@@ -116,10 +116,11 @@ const OrdersTable = () => {
 
                         <td>
                           <div className="d-flex align-items-center gap-1">
-                            <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                              <span className="material-symbols-outlined fs-16 text-primary">visibility</span>
-                            </button>
-
+                            <Link href={`/ecommerce/orders/details/${value.orderId}`}>
+                              <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
+                                <span className="material-symbols-outlined fs-16 text-primary">visibility</span>
+                              </button>
+                            </Link>
                             <Link href={`/ecommerce/orders/${value.orderId}`}>
                               <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
                                 <span className="material-symbols-outlined fs-16 text-body">edit</span>
