@@ -20,6 +20,8 @@ const EditProduct = ({ slug }) => {
     description: '',
     category: '',
     brand: '',
+    isFeatured: '',
+    flash_sell: '',
     variants: [],
     details: []
   });
@@ -48,6 +50,8 @@ const EditProduct = ({ slug }) => {
         description: product.description || '',
         category: product.category?._id || '',
         brand: product.brand?._id || '',
+        isFeatured: product.isFeatured || '',
+        flash_sell: product.flash_sell || '',
         variants: product.variants || [],
         details: product.details || []
       });
@@ -109,6 +113,8 @@ const EditProduct = ({ slug }) => {
     formData.append('description', form.description);
     formData.append('category', form.category);
     formData.append('brand', form.brand);
+    formData.append('isFeatured', form.isFeatured);
+    formData.append('flash_sell', form.flash_sell);
 
     // details (key-value) details
     form.details.forEach((item, index) => {
@@ -362,7 +368,12 @@ const EditProduct = ({ slug }) => {
                   <Col sm={6} lg={12}>
                     <Form.Group className="mb-4">
                       <Form.Label className="label text-secondary">Brand</Form.Label>
-                      <Form.Select className="form-control h-55" aria-label="Default select example">
+                      <Form.Select
+                        className="form-control h-55"
+                        name="brand"
+                        onChange={handleChange}
+                        aria-label="Default select example"
+                      >
                         <option>{product?.brand?.name}</option>
                         {Brands?.map((item, idx) => (
                           <option key={idx} value={item?._id}>
@@ -401,6 +412,43 @@ const EditProduct = ({ slug }) => {
                 </Row>
               </Card.Body>
             </Card>
+            <Card className="bg-white border-0 rounded-3 mb-4">
+              <Card.Body className="p-4">
+                <Col sm={6} lg={12}>
+                  <Form.Group className="mb-4">
+                    <Form.Label className="label text-secondary">Featured Product</Form.Label>
+
+                    <Form.Select
+                      name="isFeatured"
+                      onChange={handleChange}
+                      className="form-control h-55"
+                      aria-label="Default select example"
+                    >
+                      <option>{product?.isFeatured === true ? 'Yes' : 'No'}</option>
+                      <option value="">-- Select --</option>
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+                <Col sm={6} lg={12}>
+                  <Form.Group className="mb-4">
+                    <Form.Label className="label text-secondary">Flash Sell</Form.Label>
+                    <Form.Select
+                      className="form-control h-55"
+                      name="flash_sell"
+                      onChange={handleChange}
+                      aria-label="Default select example"
+                    >
+                      <option>{product?.flash_sell === true ? 'Yes' : 'No'}</option>
+                      <option value="">-- Select --</option>
+                      <option value="true">Yes</option>
+                      <option value="false">No</option>
+                    </Form.Select>
+                  </Form.Group>
+                </Col>
+              </Card.Body>
+            </Card>{' '}
             {/* 
             <Card className="bg-white border-0 rounded-3 mb-4">
               <Card.Body className="p-4">
