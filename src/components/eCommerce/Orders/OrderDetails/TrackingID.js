@@ -13,6 +13,8 @@ const TrackingID = ({ details }) => {
     if (details) dispatch(fetchOrderById(details));
   }, [dispatch, details]);
 
+  //fixd
+
   if (loading && !order) {
     return (
       <div className="text-center my-5">
