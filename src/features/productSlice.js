@@ -1,184 +1,456 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import * as API from './API';
-// import toast from 'react-hot-toast';
-import { toast } from '@/components/Ui/GlobalToast';
+// import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+// import * as API from './API';
+// // import toast from 'react-hot-toast';
+// import { toast } from '@/components/Ui/GlobalToast';
 
-// const initialState = {
-//   products: [],
-//   topProducts: [],
-//   product: null,
-//   loading: false,
-//   error: null,
-//   success: false
-// };
+// // const initialState = {
+// //   products: [],
+// //   topProducts: [],
+// //   product: null,
+// //   loading: false,
+// //   error: null,
+// //   success: false
+// // };
 
-// Create Product
-export const createProduct = createAsyncThunk('product/create', async (data, thunkAPI) => {
-  try {
-    const res = await API.createProduct(data);
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to create product');
-  }
-});
-
-// Get All Products
-// export const getProducts = createAsyncThunk('product/getAll', async (_, thunkAPI) => {
+// // Create Product
+// export const createProduct = createAsyncThunk('product/create', async (data, thunkAPI) => {
 //   try {
-//     const res = await API.getProducts();
+//     const res = await API.createProduct(data);
 //     return res.data;
 //   } catch (err) {
-//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to fetch products');
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to create product');
 //   }
 // });
 
-export const getProducts = createAsyncThunk(
-  'product/fetchProducts',
-  async ({ page = 1, limit = 10, search = '', category, sort, maxPrice, minPrice }, thunkAPI) => {
+// // Get All Products
+// // export const getProducts = createAsyncThunk('product/getAll', async (_, thunkAPI) => {
+// //   try {
+// //     const res = await API.getProducts();
+// //     return res.data;
+// //   } catch (err) {
+// //     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to fetch products');
+// //   }
+// // });
+
+// export const getProducts = createAsyncThunk(
+//   'product/fetchProducts',
+//   async ({ page = 1, limit = 10, search = '', category, sort, maxPrice, minPrice }, thunkAPI) => {
+//     try {
+//       const skip = (page - 1) * limit;
+//       const response = await API.getProducts({ limit, skip, search, category, sort, maxPrice, minPrice });
+//       return { ...response.data, page };
+//     } catch (error) {
+//       return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to fetch products');
+//     }
+//   }
+// );
+// // Get Single Product
+// export const getProduct = createAsyncThunk('product/getOne', async (slug, thunkAPI) => {
+//   try {
+//     const res = await API.getProduct(slug);
+//     return res.data;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to fetch product');
+//   }
+// });
+
+// // Update Product
+// export const updateProduct = createAsyncThunk('product/update', async ({ slug, data }, thunkAPI) => {
+//   try {
+//     // console.log('slug:', slug);
+//     // for (let [key, value] of data.entries()) {
+//     //   console.log(`${key}:`, value);
+//     // }
+//     const res = await API.updateProduct(slug, data);
+//     return res.data;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to update product');
+//   }
+// });
+
+// // Delete Product
+// export const deleteProduct = createAsyncThunk('product/delete', async (id, thunkAPI) => {
+//   try {
+//     await API.deleteProduct(id);
+//     return id;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to delete product');
+//   }
+// });
+
+// // Create Product Review
+// export const createProductReview = createAsyncThunk('product/review', async ({ id, review }, thunkAPI) => {
+//   try {
+//     const res = await API.createProductReview(id, review);
+//     return res.data;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to submit review');
+//   }
+// });
+
+// // Get Top Products
+// export const getTopProducts = createAsyncThunk('product/top', async (_, thunkAPI) => {
+//   try {
+//     const res = await API.getTopProducts();
+//     return res.data;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to fetch top products');
+//   }
+// });
+
+// const productSlice = createSlice({
+//   name: 'product',
+//   initialState: {
+//     products: [],
+//     product: {},
+//     loading: true,
+//     total: 0,
+//     maxLimit: 0,
+//     maxSkip: 0,
+//     page: 1,
+//     error: null
+//   },
+//   reducers: {
+//     clearProductState: (state) => {
+//       state.loading = false;
+//       state.success = false;
+//       state.error = null;
+//     }
+//   },
+//   extraReducers: (builder) => {
+//     builder
+//       // Create
+//       .addCase(createProduct.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(createProduct.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.success = true;
+//         // state.products.push(action.payload);
+//         toast.success('Product created successfully');
+//       })
+//       .addCase(createProduct.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//         toast.error(action.payload);
+//       })
+
+//       // Get All
+//       .addCase(getProducts.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(getProducts.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.success = true;
+//         state.products = action.payload.products;
+//         state.total = action.payload.total;
+//         state.maxLimit = action.payload.maxLimit;
+//         state.maxSkip = action.payload.maxSkip;
+//         state.page = action.payload.page;
+//       })
+//       .addCase(getProducts.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//         // toast.error(action.payload);
+//         toast.error('Product not availbale');
+//         state.products = [];
+//       })
+
+//       // Get One
+//       .addCase(getProduct.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(getProduct.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.success = true;
+//         state.product = action.payload;
+//       })
+//       .addCase(getProduct.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//         toast.error(action.error.message);
+//       })
+
+//       // Update
+//       .addCase(updateProduct.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.success = true;
+//         const index = state.products.findIndex((p) => p._id === action.payload._id);
+//         if (index !== -1) {
+//           state.products[index] = action.payload;
+//         }
+//         toast.success('Product updated successfully');
+//       })
+//       .addCase(updateProduct.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//         toast.error(action.payload);
+//       })
+
+//       // Delete
+//       .addCase(deleteProduct.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.success = true;
+//         state.products = state.products.filter((p) => p._id !== action.payload);
+//         toast.success('Product deleted successfully');
+//       })
+//       .addCase(deleteProduct.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//         toast.error(action.payload);
+//       })
+
+//       // Top Products
+//       .addCase(getTopProducts.fulfilled, (state, action) => {
+//         state.topProducts = action.payload;
+//       })
+//       .addCase(getTopProducts.rejected, (state, action) => {
+//         toast.error(action.payload);
+//       });
+//   }
+// });
+
+// export const { clearProductState } = productSlice.actions;
+// export default productSlice.reducer;
+
+
+
+
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import * as API from './API';
+import { toast } from '@/components/Ui/GlobalToast';
+
+const getPayload = (res) => res?.data || res;
+
+export const createProduct = createAsyncThunk(
+  'product/create',
+  async (data, thunkAPI) => {
     try {
-      const skip = (page - 1) * limit;
-      const response = await API.getProducts({ limit, skip, search, category, sort, maxPrice, minPrice });
-      return { ...response.data, page };
-    } catch (error) {
-      return thunkAPI.rejectWithValue(error.response?.data?.message || 'Failed to fetch products');
+      const res = await API.createProduct(data);
+      return getPayload(res);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Failed to create product'
+      );
     }
   }
 );
-// Get Single Product
-export const getProduct = createAsyncThunk('product/getOne', async (slug, thunkAPI) => {
-  try {
-    const res = await API.getProduct(slug);
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to fetch product');
-  }
-});
 
-// Update Product
-export const updateProduct = createAsyncThunk('product/update', async ({ slug, data }, thunkAPI) => {
-  try {
-    // console.log('slug:', slug);
-    // for (let [key, value] of data.entries()) {
-    //   console.log(`${key}:`, value);
-    // }
-    const res = await API.updateProduct(slug, data);
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to update product');
-  }
-});
+export const getProducts = createAsyncThunk(
+  'product/fetchProducts',
+  async (
+    {
+      page = 1,
+      limit = 10,
+      search = '',
+      category,
+      sort,
+      maxPrice,
+      minPrice,
+    } = {},
+    thunkAPI
+  ) => {
+    try {
+      const skip = (page - 1) * limit;
 
-// Delete Product
-export const deleteProduct = createAsyncThunk('product/delete', async (id, thunkAPI) => {
-  try {
-    await API.deleteProduct(id);
-    return id;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to delete product');
-  }
-});
+      const res = await API.getProducts({
+        limit,
+        skip,
+        search,
+        category,
+        sort,
+        maxPrice,
+        minPrice,
+      });
 
-// Create Product Review
-export const createProductReview = createAsyncThunk('product/review', async ({ id, review }, thunkAPI) => {
-  try {
-    const res = await API.createProductReview(id, review);
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to submit review');
+      const payload = getPayload(res);
+      return { ...payload, page };
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Failed to fetch products'
+      );
+    }
   }
-});
+);
 
-// Get Top Products
-export const getTopProducts = createAsyncThunk('product/top', async (_, thunkAPI) => {
-  try {
-    const res = await API.getTopProducts();
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to fetch top products');
+export const getProduct = createAsyncThunk(
+  'product/getOne',
+  async (slug, thunkAPI) => {
+    try {
+      const res = await API.getProduct(slug);
+      return getPayload(res);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Failed to fetch product'
+      );
+    }
   }
-});
+);
+
+export const updateProduct = createAsyncThunk(
+  'product/update',
+  async ({ slug, data }, thunkAPI) => {
+    try {
+      const res = await API.updateProduct(slug, data);
+      return getPayload(res);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Failed to update product'
+      );
+    }
+  }
+);
+
+export const deleteProduct = createAsyncThunk(
+  'product/delete',
+  async (id, thunkAPI) => {
+    try {
+      await API.deleteProduct(id);
+      return id;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Failed to delete product'
+      );
+    }
+  }
+);
+
+export const createProductReview = createAsyncThunk(
+  'product/review',
+  async ({ id, review }, thunkAPI) => {
+    try {
+      const res = await API.createProductReview(id, review);
+      return getPayload(res);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Failed to submit review'
+      );
+    }
+  }
+);
+
+export const getTopProducts = createAsyncThunk(
+  'product/top',
+  async (_, thunkAPI) => {
+    try {
+      const res = await API.getTopProducts();
+      return getPayload(res);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Failed to fetch top products'
+      );
+    }
+  }
+);
 
 const productSlice = createSlice({
   name: 'product',
   initialState: {
     products: [],
-    product: {},
-    loading: true,
+    topProducts: [],
+    product: null,
+    loading: false,
     total: 0,
     maxLimit: 0,
     maxSkip: 0,
     page: 1,
-    error: null
+    error: null,
+    success: false,
   },
   reducers: {
     clearProductState: (state) => {
       state.loading = false;
       state.success = false;
       state.error = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
-      // Create
       .addCase(createProduct.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(createProduct.fulfilled, (state, action) => {
-        state.loading = false;
-        state.success = true;
-        // state.products.push(action.payload);
-        toast.success('Product created successfully');
-      })
+  state.loading = false;
+  state.success = true;
+
+  const product =
+    action.payload?.product ||
+    action.payload?.data?.product ||
+    action.payload?.data ||
+    action.payload;
+
+  if (product?._id) {
+    state.products.unshift(product);
+  }
+
+  toast.success(
+    action.payload?.message || 'Product created successfully'
+  );
+})
       .addCase(createProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         toast.error(action.payload);
       })
 
-      // Get All
       .addCase(getProducts.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(getProducts.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.products = action.payload.products;
-        state.total = action.payload.total;
-        state.maxLimit = action.payload.maxLimit;
-        state.maxSkip = action.payload.maxSkip;
-        state.page = action.payload.page;
+
+        state.products =
+          action.payload?.products ||
+          action.payload?.data ||
+          action.payload ||
+          [];
+
+        state.total = action.payload?.total || state.products.length;
+        state.maxLimit = action.payload?.maxLimit || 0;
+        state.maxSkip = action.payload?.maxSkip || 0;
+        state.page = action.payload?.page || 1;
       })
       .addCase(getProducts.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        // toast.error(action.payload);
-        toast.error('Product not availbale');
         state.products = [];
+        toast.error(action.payload || 'Product not available');
       })
 
-      // Get One
       .addCase(getProduct.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(getProduct.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.product = action.payload;
+        state.product = action.payload?.data || action.payload;
       })
       .addCase(getProduct.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        toast.error(action.error.message);
+        toast.error(action.payload);
       })
 
-      // Update
+      .addCase(updateProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(updateProduct.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        const index = state.products.findIndex((p) => p._id === action.payload._id);
-        if (index !== -1) {
-          state.products[index] = action.payload;
-        }
+
+        const updated = action.payload?.data || action.payload;
+        const index = state.products.findIndex(
+          (p) => p._id === updated?._id || p.slug === updated?.slug
+        );
+
+        if (index !== -1) state.products[index] = updated;
+        state.product = updated;
+
         toast.success('Product updated successfully');
       })
       .addCase(updateProduct.rejected, (state, action) => {
@@ -187,11 +459,16 @@ const productSlice = createSlice({
         toast.error(action.payload);
       })
 
-      // Delete
+      .addCase(deleteProduct.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(deleteProduct.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        state.products = state.products.filter((p) => p._id !== action.payload);
+        state.products = state.products.filter(
+          (p) => p._id !== action.payload && p.slug !== action.payload
+        );
         toast.success('Product deleted successfully');
       })
       .addCase(deleteProduct.rejected, (state, action) => {
@@ -200,14 +477,14 @@ const productSlice = createSlice({
         toast.error(action.payload);
       })
 
-      // Top Products
       .addCase(getTopProducts.fulfilled, (state, action) => {
-        state.topProducts = action.payload;
+        state.topProducts =
+          action.payload?.products || action.payload?.data || action.payload || [];
       })
       .addCase(getTopProducts.rejected, (state, action) => {
         toast.error(action.payload);
       });
-  }
+  },
 });
 
 export const { clearProductState } = productSlice.actions;

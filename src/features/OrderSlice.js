@@ -1,7 +1,297 @@
+// import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+// import * as API from './API';
+// // import toast from 'react-hot-toast';
+// import { toast } from '@/components/Ui/GlobalToast';
+
+// const initialState = {
+//   order: null,
+//   orders: [],
+//   myOrders: [],
+//   lastOrder: null,
+//   loading: false,
+//   error: null,
+//   total: 0,
+//   maxLimit: 0,
+//   maxSkip: 0,
+//   page: 1,
+//   success: false
+// };
+
+// // Create Order
+// export const createOrder = createAsyncThunk('order/create', async (orderData, thunkAPI) => {
+//   try {
+//     const res = await API.createOrder(orderData);
+//     return res.data;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong');
+//   }
+// });
+
+// // Get My Orders
+// export const fetchMyOrders = createAsyncThunk('order/fetchMyOrders', async (_, thunkAPI) => {
+//   try {
+//     const res = await API.getMyOrders();
+//     return res.data;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong');
+//   }
+// });
+// // Get Last Orders
+// export const getLastOrder = createAsyncThunk('order/Last-order', async (_, thunkAPI) => {
+//   try {
+//     const res = await API.getLastOrder();
+//     return res.data;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong');
+//   }
+// });
+
+// // Get Single Order
+// export const fetchOrderById = createAsyncThunk('order/fetchOrderById', async (orderId, thunkAPI) => {
+//   try {
+//     const res = await API.getOrderById(orderId);
+//     return res.data;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong');
+//   }
+// });
+
+// // Pay Order
+// export const payOrder = createAsyncThunk('order/pay', async ({ orderId, paymentResult }, thunkAPI) => {
+//   try {
+//     const res = await API.payOrder(orderId, paymentResult);
+//     return res.data;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Payment failed');
+//   }
+// });
+
+// // Deliver Order (admin)
+// export const deliverOrder = createAsyncThunk('order/deliver', async (orderId, thunkAPI) => {
+//   try {
+//     const res = await API.deliverOrder(orderId);
+//     return res.data;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Delivery update failed');
+//   }
+// });
+
+// // Update Delivery Status
+// export const updateDeliveryStatus = createAsyncThunk('order/deliver/status', async ({ orderId, status }, thunkAPI) => {
+//   try {
+//     const res = await API.updateDeliveryStatus(orderId, status);
+//     return res.data;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Delivery update failed');
+//   }
+// });
+
+// // Reset Delivery Status
+// export const resetDeliveryStatus = createAsyncThunk('order/resetDeliveryStatus', async ({ orderId }, thunkAPI) => {
+//   try {
+//     const res = await API.resetDeliveryStatus(orderId);
+//     return res.data;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Fetch failed');
+//   }
+// });
+
+// // Get All Orders (admin)
+// export const fetchAllOrders = createAsyncThunk('order/fetchAllOrders', async (skip, limit, search, thunkAPI) => {
+//   try {
+//     const res = await API.getAllOrders(skip, limit, search);
+//     return res.data;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Fetch failed');
+//   }
+// });
+
+// // Delete Order
+// export const deleteOrder = createAsyncThunk('order/delete', async (orderId, thunkAPI) => {
+//   try {
+//     await API.deleteOrder(orderId);
+//     return orderId;
+//   } catch (err) {
+//     return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to delete order');
+//   }
+// });
+
+// const orderSlice = createSlice({
+//   name: 'order',
+//   initialState,
+//   reducers: {
+//     clearOrderState(state) {
+//       state.loading = false;
+//       state.success = false;
+//       state.error = null;
+//       state.order = null;
+//     }
+//   },
+//   extraReducers: (builder) => {
+//     builder
+//       // Create Order
+//       .addCase(createOrder.pending, (state) => {
+//         state.loading = true;
+//         state.error = null;
+//       })
+//       .addCase(createOrder.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.order = action.payload;
+//         state.success = true;
+//         toast.success('Order created successfully');
+//       })
+//       .addCase(createOrder.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//         toast.error(`Create Order Failed: ${action.payload}`);
+//       })
+
+//       // Get My Orders
+//       .addCase(fetchMyOrders.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(fetchMyOrders.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.myOrders = action.payload;
+//       })
+//       .addCase(fetchMyOrders.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//         // toast.error(action.payload);
+//       })
+
+//       // Get Last Orders
+//       .addCase(getLastOrder.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(getLastOrder.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.lastOrder = action.payload;
+//       })
+//       .addCase(getLastOrder.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//         toast.error(action.payload);
+//       })
+//       // Get Order by ID
+//       .addCase(fetchOrderById.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(fetchOrderById.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.order = action.payload;
+//       })
+//       .addCase(fetchOrderById.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//       })
+
+//       // Pay Order
+//       .addCase(payOrder.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(payOrder.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.order = action.payload;
+//         state.success = true;
+//         toast.success('Payment successful');
+//       })
+//       .addCase(payOrder.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//         toast.error(action.payload);
+//       })
+
+//       // Deliver Order
+//       .addCase(deliverOrder.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(deliverOrder.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.order = action.payload;
+//         state.success = true;
+//         toast.success('Order delivered');
+//       })
+//       .addCase(deliverOrder.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//         toast.error(action.payload);
+//       })
+
+//       // resetDeliveryStatus
+//       .addCase(resetDeliveryStatus.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(resetDeliveryStatus.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.success = true;
+//         toast.success(`${action.payload.message}`);
+//       })
+//       .addCase(resetDeliveryStatus.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//         // toast.error(action.payload);
+//       })
+
+//       // Update Delivery Status
+
+//       .addCase(updateDeliveryStatus.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(updateDeliveryStatus.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.order = action.payload;
+//         state.success = true;
+//         toast.success('Order status Updated');
+//       })
+//       .addCase(updateDeliveryStatus.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//         toast.error(action.payload);
+//       })
+
+//       // Delete
+//       .addCase(deleteOrder.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.success = true;
+//         // state.products = state.products.filter((p) => p._id !== action.payload);
+//         toast.success('Order deleted successfully');
+//       })
+//       .addCase(deleteOrder.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//         toast.error(action.payload);
+//       })
+
+//       // Fetch All Orders (admin)
+//       .addCase(fetchAllOrders.pending, (state) => {
+//         state.loading = true;
+//       })
+//       .addCase(fetchAllOrders.fulfilled, (state, action) => {
+//         state.loading = false;
+//         state.orders = action.payload.orders;
+//         state.total = action.payload.total;
+//         state.maxLimit = action.payload.maxLimit;
+//         state.maxSkip = action.payload.maxSkip;
+//       })
+//       .addCase(fetchAllOrders.rejected, (state, action) => {
+//         state.loading = false;
+//         state.error = action.payload;
+//       });
+//   }
+// });
+
+// export const { clearOrderState } = orderSlice.actions;
+// export default orderSlice.reducer;
+
+
+
+
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import * as API from './API';
-// import toast from 'react-hot-toast';
 import { toast } from '@/components/Ui/GlobalToast';
+
+const getPayload = (res) => res?.data || res;
 
 const initialState = {
   order: null,
@@ -14,107 +304,81 @@ const initialState = {
   maxLimit: 0,
   maxSkip: 0,
   page: 1,
-  success: false
+  success: false,
 };
 
-// Create Order
-export const createOrder = createAsyncThunk('order/create', async (orderData, thunkAPI) => {
-  try {
-    const res = await API.createOrder(orderData);
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong');
+export const fetchOrderById = createAsyncThunk(
+  'order/fetchOrderById',
+  async (orderId, thunkAPI) => {
+    try {
+      const res = await API.getOrderById(orderId);
+      return getPayload(res);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Something went wrong'
+      );
+    }
   }
-});
+);
 
-// Get My Orders
-export const fetchMyOrders = createAsyncThunk('order/fetchMyOrders', async (_, thunkAPI) => {
-  try {
-    const res = await API.getMyOrders();
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong');
+export const updateDeliveryStatus = createAsyncThunk(
+  'order/updateDeliveryStatus',
+  async ({ orderId, status }, thunkAPI) => {
+    try {
+      const res = await API.updateDeliveryStatus(orderId, status);
+      return getPayload(res);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Delivery update failed'
+      );
+    }
   }
-});
-// Get Last Orders
-export const getLastOrder = createAsyncThunk('order/Last-order', async (_, thunkAPI) => {
-  try {
-    const res = await API.getLastOrder();
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong');
-  }
-});
+);
 
-// Get Single Order
-export const fetchOrderById = createAsyncThunk('order/fetchOrderById', async (orderId, thunkAPI) => {
-  try {
-    const res = await API.getOrderById(orderId);
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Something went wrong');
+export const resetDeliveryStatus = createAsyncThunk(
+  'order/resetDeliveryStatus',
+  async ({ orderId }, thunkAPI) => {
+    try {
+      const res = await API.resetDeliveryStatus(orderId);
+      return getPayload(res);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Reset failed'
+      );
+    }
   }
-});
+);
 
-// Pay Order
-export const payOrder = createAsyncThunk('order/pay', async ({ orderId, paymentResult }, thunkAPI) => {
-  try {
-    const res = await API.payOrder(orderId, paymentResult);
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Payment failed');
-  }
-});
+export const fetchAllOrders = createAsyncThunk(
+  'order/fetchAllOrders',
+  async ({ page = 1, limit = 10, search = '' } = {}, thunkAPI) => {
+    try {
+      const skip = (page - 1) * limit;
+      const res = await API.getAllOrders({ skip, limit, search });
+      const payload = getPayload(res);
 
-// Deliver Order (admin)
-export const deliverOrder = createAsyncThunk('order/deliver', async (orderId, thunkAPI) => {
-  try {
-    const res = await API.deliverOrder(orderId);
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Delivery update failed');
+      return { ...payload, page };
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Fetch failed'
+      );
+    }
   }
-});
+);
 
-// Update Delivery Status
-export const updateDeliveryStatus = createAsyncThunk('order/deliver/status', async ({ orderId, status }, thunkAPI) => {
-  try {
-    const res = await API.updateDeliveryStatus(orderId, status);
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Delivery update failed');
+export const deleteOrder = createAsyncThunk(
+  'order/delete',
+  async (orderId, thunkAPI) => {
+    try {
+      await API.deleteOrder(orderId);
+      return orderId;
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Failed to delete order'
+      );
+    }
   }
-});
-
-// Reset Delivery Status
-export const resetDeliveryStatus = createAsyncThunk('order/resetDeliveryStatus', async ({ orderId }, thunkAPI) => {
-  try {
-    const res = await API.resetDeliveryStatus(orderId);
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Fetch failed');
-  }
-});
-
-// Get All Orders (admin)
-export const fetchAllOrders = createAsyncThunk('order/fetchAllOrders', async (skip, limit, search, thunkAPI) => {
-  try {
-    const res = await API.getAllOrders(skip, limit, search);
-    return res.data;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Fetch failed');
-  }
-});
-
-// Delete Order
-export const deleteOrder = createAsyncThunk('order/delete', async (orderId, thunkAPI) => {
-  try {
-    await API.deleteOrder(orderId);
-    return orderId;
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err.response?.data?.message || 'Failed to delete order');
-  }
-});
+);
 
 const orderSlice = createSlice({
   name: 'order',
@@ -125,124 +389,63 @@ const orderSlice = createSlice({
       state.success = false;
       state.error = null;
       state.order = null;
-    }
+    },
   },
   extraReducers: (builder) => {
     builder
-      // Create Order
-      .addCase(createOrder.pending, (state) => {
+      .addCase(fetchAllOrders.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(createOrder.fulfilled, (state, action) => {
+      .addCase(fetchAllOrders.fulfilled, (state, action) => {
         state.loading = false;
-        state.order = action.payload;
-        state.success = true;
-        toast.success('Order created successfully');
-      })
-      .addCase(createOrder.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-        toast.error(`Create Order Failed: ${action.payload}`);
-      })
 
-      // Get My Orders
-      .addCase(fetchMyOrders.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(fetchMyOrders.fulfilled, (state, action) => {
-        state.loading = false;
-        state.myOrders = action.payload;
-      })
-      .addCase(fetchMyOrders.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-        // toast.error(action.payload);
-      })
+        state.orders =
+          action.payload?.orders ||
+          action.payload?.data ||
+          action.payload ||
+          [];
 
-      // Get Last Orders
-      .addCase(getLastOrder.pending, (state) => {
-        state.loading = true;
+        state.total = action.payload?.total || state.orders.length;
+        state.maxLimit = action.payload?.maxLimit || 0;
+        state.maxSkip = action.payload?.maxSkip || 0;
+        state.page = action.payload?.page || 1;
       })
-      .addCase(getLastOrder.fulfilled, (state, action) => {
-        state.loading = false;
-        state.lastOrder = action.payload;
-      })
-      .addCase(getLastOrder.rejected, (state, action) => {
+      .addCase(fetchAllOrders.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         toast.error(action.payload);
       })
-      // Get Order by ID
+
       .addCase(fetchOrderById.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchOrderById.fulfilled, (state, action) => {
         state.loading = false;
-        state.order = action.payload;
+        state.order = action.payload?.order || action.payload?.data || action.payload;
       })
       .addCase(fetchOrderById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-      })
-
-      // Pay Order
-      .addCase(payOrder.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(payOrder.fulfilled, (state, action) => {
-        state.loading = false;
-        state.order = action.payload;
-        state.success = true;
-        toast.success('Payment successful');
-      })
-      .addCase(payOrder.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
         toast.error(action.payload);
       })
-
-      // Deliver Order
-      .addCase(deliverOrder.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(deliverOrder.fulfilled, (state, action) => {
-        state.loading = false;
-        state.order = action.payload;
-        state.success = true;
-        toast.success('Order delivered');
-      })
-      .addCase(deliverOrder.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-        toast.error(action.payload);
-      })
-
-      // resetDeliveryStatus
-      .addCase(resetDeliveryStatus.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(resetDeliveryStatus.fulfilled, (state, action) => {
-        state.loading = false;
-        state.success = true;
-        toast.success(`${action.payload.message}`);
-      })
-      .addCase(resetDeliveryStatus.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-        // toast.error(action.payload);
-      })
-
-      // Update Delivery Status
 
       .addCase(updateDeliveryStatus.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(updateDeliveryStatus.fulfilled, (state, action) => {
         state.loading = false;
-        state.order = action.payload;
         state.success = true;
-        toast.success('Order status Updated');
+
+        const updated = action.payload?.order || action.payload?.data || action.payload;
+        state.order = updated;
+
+        const index = state.orders.findIndex((o) => o._id === updated?._id);
+        if (index !== -1) state.orders[index] = updated;
+
+        toast.success('Order status updated');
       })
       .addCase(updateDeliveryStatus.rejected, (state, action) => {
         state.loading = false;
@@ -250,35 +453,45 @@ const orderSlice = createSlice({
         toast.error(action.payload);
       })
 
-      // Delete
+      .addCase(resetDeliveryStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(resetDeliveryStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+
+        const updated = action.payload?.order || action.payload?.data || action.payload;
+        if (updated?._id) {
+          state.order = updated;
+          const index = state.orders.findIndex((o) => o._id === updated._id);
+          if (index !== -1) state.orders[index] = updated;
+        }
+
+        toast.success(action.payload?.message || 'Delivery status reset');
+      })
+      .addCase(resetDeliveryStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        toast.error(action.payload);
+      })
+
+      .addCase(deleteOrder.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(deleteOrder.fulfilled, (state, action) => {
         state.loading = false;
         state.success = true;
-        // state.products = state.products.filter((p) => p._id !== action.payload);
+        state.orders = state.orders.filter((o) => o._id !== action.payload);
         toast.success('Order deleted successfully');
       })
       .addCase(deleteOrder.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         toast.error(action.payload);
-      })
-
-      // Fetch All Orders (admin)
-      .addCase(fetchAllOrders.pending, (state) => {
-        state.loading = true;
-      })
-      .addCase(fetchAllOrders.fulfilled, (state, action) => {
-        state.loading = false;
-        state.orders = action.payload.orders;
-        state.total = action.payload.total;
-        state.maxLimit = action.payload.maxLimit;
-        state.maxSkip = action.payload.maxSkip;
-      })
-      .addCase(fetchAllOrders.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
       });
-  }
+  },
 });
 
 export const { clearOrderState } = orderSlice.actions;
