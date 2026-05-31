@@ -8,6 +8,7 @@ import SearchSlice from '@/features/SearchSlice.js';
 import reviewSlice from '@/features/reviewSlice.js';
 import CartSlice from '@/features/cartSlice.js';
 import OrderSlice from '@/features/OrderSlice.js';
+import questionSlice from '@/features/questionSlice.js';
 
 const store = configureStore({
   reducer: {
@@ -19,7 +20,8 @@ const store = configureStore({
     brand: BrandSlice,
     review: reviewSlice,
     cart: CartSlice,
-    order: OrderSlice
+    order: OrderSlice,
+    question: questionSlice,
   }
 });
 

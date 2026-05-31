@@ -1,361 +1,812 @@
-"use client";
+'use client';
 
-import React, { useState } from "react";
-import { Card, Form, Table, Button, Offcanvas } from "react-bootstrap";
-import SearchForm from "./SearchForm";
-import Pagination from "./Pagination";
-import Image from "next/image";
-
-const customersData = [
-  {
-    id: "#JAN-854",
-    customerImg: "/images/user-6.jpg",
-    customerName: "Oliver Khan",
-    email: "oliver@trezo.com",
-    phone: "+1 555-123-4567",
-    lastLogin: "10 Oct 2024",
-    totalSpend: "$6,855.00",
-    totalOrders: 125,
-    status: "active",
-  },
-  {
-    id: "#JAN-853",
-    customerImg: "/images/user-7.jpg",
-    customerName: "Carolyn Barnes",
-    email: "carolyn@trezo.com",
-    phone: "+1 555-987-6543",
-    lastLogin: "11 Sep 2024",
-    totalSpend: "$2,800.00",
-    totalOrders: 99,
-    status: "active",
-  },
-  {
-    id: "#JAN-852",
-    customerImg: "/images/user-8.jpg",
-    customerName: "Donna Miller",
-    email: "donna@trezo.com",
-    phone: "+1 555-456-7890",
-    lastLogin: "12 Aug 2024",
-    totalSpend: "$258.00",
-    totalOrders: 145,
-    status: "active",
-  },
-  {
-    id: "#JAN-851",
-    customerImg: "/images/user-9.jpg",
-    customerName: "Barbara Cross",
-    email: "barbara@trezo.com",
-    phone: "+1 555-369-7878",
-    lastLogin: "13 Jul 2024",
-    totalSpend: "$3,890.00",
-    totalOrders: 279,
-    status: "active",
-  },
-  {
-    id: "#JAN-850",
-    customerImg: "/images/user-10.jpg",
-    customerName: "Rebecca Block",
-    email: "rebecca@trezo.com",
-    phone: "+1 555-658-4488",
-    lastLogin: "14 Jun 2024",
-    totalSpend: "$2,500.00",
-    totalOrders: 169,
-    status: "deactive",
-  },
-  {
-    id: "#JAN-849",
-    customerImg: "/images/user-11.jpg",
-    customerName: "Ramiro McCarty",
-    email: "ramiro@trezo.com",
-    phone: "+1 555-558-9966",
-    lastLogin: "15 May 2024",
-    totalSpend: "$8,200.00",
-    totalOrders: 46,
-    status: "active",
-  },
-  {
-    id: "#JAN-848",
-    customerImg: "/images/user-12.jpg",
-    customerName: "Robert Fairweather",
-    email: "robert@trezo.com",
-    phone: "+1 555-357-5888",
-    lastLogin: "16 Apr 2024",
-    totalSpend: "$640.00",
-    totalOrders: 184,
-    status: "active",
-  },
-  {
-    id: "#JAN-847",
-    customerImg: "/images/user-13.jpg",
-    customerName: "Marcelino Haddock",
-    email: "marcelino@trezo.com",
-    phone: "+1 555-456-8877",
-    lastLogin: "17 Mar 2024",
-    totalSpend: "$9,100.00",
-    totalOrders: 166,
-    status: "active",
-  },
-  {
-    id: "#JAN-846",
-    customerImg: "/images/user-14.jpg",
-    customerName: "Thomas Wilson",
-    email: "thomas@trezo.com",
-    phone: "+1 555-622-4488",
-    lastLogin: "18 Feb 2024",
-    totalSpend: "$7,300.00",
-    totalOrders: 75,
-    status: "active",
-  },
-  {
-    id: "#JAN-845",
-    customerImg: "/images/user-15.jpg",
-    customerName: "Nathaniel Hulsey",
-    email: "nathaniel@trezo.com",
-    phone: "+1 555-225-4488",
-    lastLogin: "19 Jan 2024",
-    totalSpend: "$6,600.00",
-    totalOrders: 55,
-    status: "deactive",
-  },
-];
+import React, { useEffect, useMemo, useState } from 'react';
+import {
+  Card,
+  Form,
+  Table,
+  Button,
+  Badge,
+  Spinner,
+  Alert,
+  Row,
+  Col,
+} from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  fetchCustomers,
+  fetchCustomerById,
+  updateCustomerByAdmin,
+  deleteCustomerByAdmin,
+} from '@/features/userSlice';
 
 const Customers = () => {
-  // Modal
-  const [isShowModal, setShowModal] = useState("false");
-  const handleToggleShowModal = () => {
-    setShowModal(!isShowModal);
+  const dispatch = useDispatch();
+
+  const {
+    users,
+    customer,
+    customerOrders,
+    customerSummary,
+    customerStats,
+    pagination,
+    loading,
+    error,
+  } = useSelector((state) => state.user);
+
+  const [hasMounted, setHasMounted] = useState(false);
+
+  const [search, setSearch] = useState('');
+  const [status, setStatus] = useState('all');
+  const [role, setRole] = useState('user');
+  const [page, setPage] = useState(1);
+
+  const [selectedCustomerId, setSelectedCustomerId] = useState(null);
+  const [showDrawer, setShowDrawer] = useState(false);
+
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    role: 'user',
+    isActive: true,
+  });
+
+  const limit = 10;
+  const customers = Array.isArray(users) ? users : [];
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  const selectedListCustomer = useMemo(() => {
+    if (!selectedCustomerId) return null;
+    return customers.find((item) => item._id === selectedCustomerId) || null;
+  }, [customers, selectedCustomerId]);
+
+  const activeCustomer = useMemo(() => {
+    if (customer?._id === selectedCustomerId) return customer;
+    return selectedListCustomer;
+  }, [customer, selectedCustomerId, selectedListCustomer]);
+
+  const refreshCustomers = () => {
+    dispatch(
+      fetchCustomers({
+        page,
+        limit,
+        search,
+        status,
+        role,
+      })
+    );
   };
+
+  useEffect(() => {
+    if (!hasMounted) return;
+
+    const timer = setTimeout(() => {
+      dispatch(
+        fetchCustomers({
+          page,
+          limit,
+          search,
+          status,
+          role,
+        })
+      );
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [dispatch, hasMounted, page, limit, search, status, role]);
+
+  useEffect(() => {
+    if (!activeCustomer) return;
+
+    setFormData({
+      firstName: activeCustomer.firstName || '',
+      lastName: activeCustomer.lastName || '',
+      email: activeCustomer.email || '',
+      phone:
+        activeCustomer.phone ||
+        activeCustomer.displayPhone ||
+        activeCustomer.lastShippingPhone ||
+        activeCustomer.lastManualPaymentPhone ||
+        '',
+      role: activeCustomer.role || 'user',
+      isActive: activeCustomer.isActive !== false,
+    });
+  }, [activeCustomer]);
+
+  const localStats = useMemo(() => {
+    return {
+      total: customerStats?.total || customers.length || 0,
+      active:
+        customerStats?.active ??
+        customers.filter((item) => item.isActive).length ??
+        0,
+      inactive:
+        customerStats?.inactive ??
+        customers.filter((item) => !item.isActive).length ??
+        0,
+      totalSpend: customers.reduce(
+        (sum, item) => sum + Number(item.totalSpend || 0),
+        0
+      ),
+    };
+  }, [customerStats, customers]);
+
+  const formatDate = (date) => {
+    if (!date) return 'N/A';
+
+    return new Intl.DateTimeFormat('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: true,
+      timeZone: 'Asia/Dhaka',
+    }).format(new Date(date));
+  };
+
+  const formatMoney = (amount) => {
+    return `${Number(amount || 0).toLocaleString('en-BD')} tk`;
+  };
+
+  const getInitials = (item) => {
+    const first = item?.firstName?.[0] || '';
+    const last = item?.lastName?.[0] || '';
+    return `${first}${last}`.toUpperCase() || 'U';
+  };
+
+  const getCustomerName = (item) => {
+    const name =
+      item?.fullName ||
+      `${item?.firstName || ''} ${item?.lastName || ''}`.trim();
+
+    return name || 'Unknown Customer';
+  };
+
+  const getCustomerPhone = (item) => {
+    return (
+      item?.displayPhone ||
+      item?.phone ||
+      item?.lastShippingPhone ||
+      item?.lastManualPaymentPhone ||
+      'No phone'
+    );
+  };
+
+  const openCustomerDrawer = (id) => {
+    setSelectedCustomerId(id);
+    setShowDrawer(true);
+    dispatch(fetchCustomerById(id));
+  };
+
+  const closeCustomerDrawer = () => {
+    setShowDrawer(false);
+    setSelectedCustomerId(null);
+  };
+
+  const handleUpdateCustomer = (e) => {
+    e.preventDefault();
+
+    if (!selectedCustomerId) return;
+
+    dispatch(
+      updateCustomerByAdmin({
+        id: selectedCustomerId,
+        payload: formData,
+      })
+    ).then(() => {
+      refreshCustomers();
+    });
+  };
+
+  const handleDeleteCustomer = (id) => {
+    const confirmed = window.confirm(
+      'Are you sure? If this customer has order history, the account will be deactivated instead of deleted.'
+    );
+
+    if (!confirmed) return;
+
+    dispatch(deleteCustomerByAdmin(id)).then(() => {
+      refreshCustomers();
+
+      if (selectedCustomerId === id) {
+        closeCustomerDrawer();
+      }
+    });
+  };
+
+  const handleStatusQuickToggle = (item) => {
+    dispatch(
+      updateCustomerByAdmin({
+        id: item._id,
+        payload: {
+          isActive: !item.isActive,
+        },
+      })
+    ).then(() => {
+      refreshCustomers();
+    });
+  };
+
+  if (!hasMounted) {
+    return (
+      <Card className="border-0 rounded-3 bg-white">
+        <Card.Body className="p-5 text-center">
+          <Spinner animation="border" />
+          <p className="text-muted mt-3 mb-0">Loading customer panel...</p>
+        </Card.Body>
+      </Card>
+    );
+  }
 
   return (
     <>
-      <Card className="bg-white border-0 rounded-3 mb-4">
-        <Card.Body className="p-0">
-          <div className="p-4">
-            <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
-              <SearchForm />
-
-              <div className="text-end">
-                <button
-                  className="btn btn-outline-primary py-1 px-2 px-sm-4 fs-14 fw-medium rounded-3 hover-bg"
-                  onClick={handleToggleShowModal}
-                >
-                  <span className="py-sm-1 d-block">
-                    <i className="ri-add-line"></i>
-                    <span>Add New Customer</span>
+      <Row className="g-4 mb-4">
+        <Col sm={6} xl={3}>
+          <Card className="customer-stat-card border-0 rounded-4 bg-white h-100">
+            <Card.Body className="p-4">
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <span className="text-muted d-block mb-1">
+                    Total Customers
                   </span>
-                </button>
+                  <h3 className="mb-0">{localStats.total}</h3>
+                </div>
+
+                <div className="customer-stat-icon bg-primary bg-opacity-10 text-primary">
+                  <i className="ri-user-line"></i>
+                </div>
               </div>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col sm={6} xl={3}>
+          <Card className="customer-stat-card border-0 rounded-4 bg-white h-100">
+            <Card.Body className="p-4">
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <span className="text-muted d-block mb-1">
+                    Active Customers
+                  </span>
+                  <h3 className="mb-0 text-success">{localStats.active}</h3>
+                </div>
+
+                <div className="customer-stat-icon bg-success bg-opacity-10 text-success">
+                  <i className="ri-user-follow-line"></i>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col sm={6} xl={3}>
+          <Card className="customer-stat-card border-0 rounded-4 bg-white h-100">
+            <Card.Body className="p-4">
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <span className="text-muted d-block mb-1">Deactivated</span>
+                  <h3 className="mb-0 text-danger">{localStats.inactive}</h3>
+                </div>
+
+                <div className="customer-stat-icon bg-danger bg-opacity-10 text-danger">
+                  <i className="ri-user-forbid-line"></i>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+
+        <Col sm={6} xl={3}>
+          <Card className="customer-stat-card border-0 rounded-4 bg-white h-100">
+            <Card.Body className="p-4">
+              <div className="d-flex align-items-center justify-content-between">
+                <div>
+                  <span className="text-muted d-block mb-1">
+                    Visible Page Spend
+                  </span>
+                  <h3 className="mb-0">{formatMoney(localStats.totalSpend)}</h3>
+                </div>
+
+                <div className="customer-stat-icon bg-warning bg-opacity-10 text-warning">
+                  <i className="ri-money-dollar-circle-line"></i>
+                </div>
+              </div>
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+
+      <Card className="bg-white border-0 rounded-4 mb-4 customer-main-card">
+        <Card.Body className="p-0">
+          <div className="p-4 border-bottom">
+            <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
+              <div>
+                <h3 className="mb-1">Customer Control</h3>
+                <p className="text-muted mb-0">
+                  Manage website users, account status, roles, and order value.
+                </p>
+              </div>
+
+              <Button
+                variant="outline-primary"
+                className="rounded-3"
+                onClick={refreshCustomers}
+                disabled={loading}
+              >
+                <i className="ri-refresh-line me-1"></i>
+                Refresh
+              </Button>
             </div>
+
+            <Row className="g-3 mt-3">
+              <Col lg={6}>
+                <Form.Control
+                  type="search"
+                  placeholder="Search by name, email, or phone..."
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
+                  className="h-55 rounded-3"
+                />
+              </Col>
+
+              <Col sm={6} lg={3}>
+                <Form.Select
+                  value={status}
+                  onChange={(e) => {
+                    setStatus(e.target.value);
+                    setPage(1);
+                  }}
+                  className="h-55 rounded-3"
+                >
+                  <option value="all">All Status</option>
+                  <option value="active">Active</option>
+                  <option value="inactive">Deactivated</option>
+                </Form.Select>
+              </Col>
+
+              <Col sm={6} lg={3}>
+                <Form.Select
+                  value={role}
+                  onChange={(e) => {
+                    setRole(e.target.value);
+                    setPage(1);
+                  }}
+                  className="h-55 rounded-3"
+                >
+                  <option value="user">Customers Only</option>
+                  <option value="admin">Admins Only</option>
+                  <option value="all">All Roles</option>
+                </Form.Select>
+              </Col>
+            </Row>
           </div>
+
+          {error && (
+            <Alert variant="danger" className="mx-4 mt-4 mb-0">
+              {error}
+            </Alert>
+          )}
 
           <div className="default-table-area style-two default-table-width">
             <div className="table-responsive">
-              <Table className="align-middle">
+              <Table className="align-middle customer-table mb-0">
                 <thead>
                   <tr>
-                    <th scope="col">
-                      <Form>
-                        <Form.Check
-                          type="checkbox"
-                          id="default-checkbox"
-                          label="ID"
-                          className="fw-medium"
-                        />
-                      </Form>
-                    </th>
-                    <th scope="col">Customer</th>
-                    <th scope="col">Email</th>
-                    <th scope="col">Phone</th>
-                    <th scope="col">Last Login</th>
-                    <th scope="col">Total Spend</th>
-                    <th scope="col">Total Orders</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Action</th>
+                    <th>Customer</th>
+                    <th>Email / Phone</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Total Orders</th>
+                    <th>Total Spend</th>
+                    <th>Last Order</th>
+                    <th>Last Login</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {customersData &&
-                    customersData.slice(0, 10).map((defaultValue, i) => (
-                      <tr key={i}>
-                        <td className="text-body">
-                          <Form>
-                            <Form.Check
-                              type="checkbox"
-                              id="default-checkbox"
-                              label={defaultValue.id}
-                              className="fw-medium fs-14"
-                            />
-                          </Form>
-                        </td>
-
+                  {loading && customers.length === 0 ? (
+                    <tr>
+                      <td colSpan="9" className="text-center py-5">
+                        <Spinner animation="border" />
+                        <p className="text-muted mt-3 mb-0">
+                          Loading customers...
+                        </p>
+                      </td>
+                    </tr>
+                  ) : customers.length > 0 ? (
+                    customers.map((item) => (
+                      <tr key={item._id}>
                         <td>
                           <div className="d-flex align-items-center">
-                            <div className="flex-shrink-0">
-                              <Image
-                                src={defaultValue.customerImg}
-                                className="wh-34 rounded-circle"
-                                alt="user"
-                                width={34}
-                                height={34}
-                              />
+                            <div className="customer-avatar">
+                              {getInitials(item)}
                             </div>
-                            <div className="flex-grow-1 ms-2 position-relative top-1">
-                              <h6 className="mb-0 fs-14 fw-medium">
-                                {defaultValue.customerName}
+
+                            <div className="ms-2">
+                              <h6 className="mb-0 fs-14 fw-semibold">
+                                {getCustomerName(item)}
                               </h6>
+                              <small className="text-muted">
+                                Joined: {formatDate(item.createdAt)}
+                              </small>
                             </div>
                           </div>
                         </td>
 
-                        <td className="text-body">{defaultValue.email}</td>
-
-                        <td>{defaultValue.phone}</td>
-
-                        <td className="text-body">{defaultValue.lastLogin}</td>
-
-                        <td className="text-body">{defaultValue.totalSpend}</td>
-
-                        <td className="text-body">
-                          {defaultValue.totalOrders}
-                        </td>
-
                         <td>
-                          <span
-                            className={`badge bg-opacity-10 p-2 fs-12 fw-normal text-capitalize ${defaultValue.status}`}
-                          >
-                            {defaultValue.status}
+                          <span className="d-block text-body">
+                            {item.email || 'N/A'}
                           </span>
+
+                          <small className="text-muted">
+                            {getCustomerPhone(item)}
+                          </small>
                         </td>
 
                         <td>
-                          <div className="d-flex align-items-center gap-1">
-                            <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                              <span className="material-symbols-outlined fs-16 text-primary">
+                          <Badge
+                            bg={item.role === 'admin' ? 'primary' : 'secondary'}
+                            className="text-capitalize p-2"
+                          >
+                            {item.role || 'user'}
+                          </Badge>
+                        </td>
+
+                        <td>
+                          <Badge
+                            bg={item.isActive ? 'success' : 'danger'}
+                            className="p-2"
+                          >
+                            {item.isActive ? 'Active' : 'Deactivated'}
+                          </Badge>
+                        </td>
+
+                        <td>{item.totalOrders || 0}</td>
+
+                        <td>{formatMoney(item.totalSpend)}</td>
+
+                        <td>{formatDate(item.lastOrderAt)}</td>
+
+                        <td>{formatDate(item.lastLogin)}</td>
+
+                        <td>
+                          <div className="d-flex align-items-center gap-2">
+                            <button
+                              type="button"
+                              className="customer-action-btn text-primary"
+                              onClick={() => openCustomerDrawer(item._id)}
+                              title="View / Edit"
+                            >
+                              <span className="material-symbols-outlined fs-18">
                                 visibility
                               </span>
                             </button>
 
-                            <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                              <span className="material-symbols-outlined fs-16 text-body">
-                                edit
+                            <button
+                              type="button"
+                              className={`customer-action-btn ${
+                                item.isActive ? 'text-warning' : 'text-success'
+                              }`}
+                              onClick={() => handleStatusQuickToggle(item)}
+                              title={
+                                item.isActive
+                                  ? 'Deactivate customer'
+                                  : 'Activate customer'
+                              }
+                            >
+                              <span className="material-symbols-outlined fs-18">
+                                {item.isActive ? 'block' : 'check_circle'}
                               </span>
                             </button>
 
-                            <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                              <span className="material-symbols-outlined fs-16 text-danger">
+                            <button
+                              type="button"
+                              className="customer-action-btn text-danger"
+                              onClick={() => handleDeleteCustomer(item._id)}
+                              title="Delete / deactivate"
+                            >
+                              <span className="material-symbols-outlined fs-18">
                                 delete
                               </span>
                             </button>
                           </div>
                         </td>
                       </tr>
-                    ))}
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="9" className="text-center text-muted py-5">
+                        No customers found.
+                      </td>
+                    </tr>
+                  )}
                 </tbody>
               </Table>
+            </div>
 
-              {/* Pagination */}
-              <Pagination />
+            <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 p-4 border-top">
+              <span className="text-muted">
+                Page {pagination?.page || page} of {pagination?.pages || 1} ·
+                Total {pagination?.total || 0}
+              </span>
+
+              <div className="d-flex gap-2">
+                <Button
+                  variant="light"
+                  className="border rounded-3"
+                  disabled={page <= 1 || loading}
+                  onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+                >
+                  Previous
+                </Button>
+
+                <Button
+                  variant="light"
+                  className="border rounded-3"
+                  disabled={
+                    loading ||
+                    page >= Number(pagination?.pages || 1) ||
+                    customers.length === 0
+                  }
+                  onClick={() => setPage((prev) => prev + 1)}
+                >
+                  Next
+                </Button>
+              </div>
             </div>
           </div>
         </Card.Body>
       </Card>
 
-      {/* Modal */}
-      <div className={`custom-modal right ${isShowModal ? "" : "show"}`}>
-        <div className="custom-modal-content position-relative z-3">
-          <div className="border-bottom py-3 px-4 d-flex align-items-center justify-content-between">
-            <h3 className="fs-18 mb-0">Add New Customer</h3>
+      {showDrawer && (
+        <button
+          type="button"
+          className="customer-drawer-backdrop"
+          onClick={closeCustomerDrawer}
+          aria-label="Close customer drawer"
+        />
+      )}
 
-            <div className="close-link" onClick={handleToggleShowModal}>
-              <span className="material-symbols-outlined">close</span>
-            </div>
+      <aside
+        className={`customer-drawer ${showDrawer ? 'show' : ''}`}
+        aria-hidden={!showDrawer}
+      >
+        <div className="customer-drawer-header">
+          <div>
+            <h5 className="mb-1">Customer Details</h5>
+            <small className="text-muted">View and control customer account</small>
           </div>
 
-          <div className="p-4">
-            <Form>
-              <Form.Group className="mb-4">
-                <Form.Label className="label">ID</Form.Label>
-                <Form.Control
-                  type="text"
-                  className="text-dark"
-                  placeholder="ID"
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-4">
-                <Form.Label className="label">Customer Name</Form.Label>
-                <Form.Control
-                  type="text"
-                  className="text-dark"
-                  placeholder="Customer Name"
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-4">
-                <Form.Label className="label">Email</Form.Label>
-                <Form.Control
-                  type="email"
-                  className="text-dark"
-                  placeholder="Email"
-                />
-              </Form.Group>
-
-              <Form.Group className="mb-4">
-                <Form.Label className="label">Phone</Form.Label>
-                <Form.Control type="text" className="text-dark" />
-              </Form.Group>
-
-              <Form.Group className="mb-4">
-                <Form.Label className="label">Total Spend</Form.Label>
-                <Form.Control type="text" className="text-dark" />
-              </Form.Group>
-
-              <Form.Group className="mb-4">
-                <Form.Label className="label">Total Orders</Form.Label>
-                <Form.Control type="text" className="text-dark" />
-              </Form.Group>
-
-              <Form.Group className="mb-4">
-                <Form.Label className="label">Status</Form.Label>
-                <Form.Select
-                  className="form-control text-dark"
-                  aria-label="Default select example"
-                >
-                  <option>Select</option>
-                  <option defaultValue="0">Active</option>
-                  <option defaultValue="1">Deactive</option>
-                </Form.Select>
-              </Form.Group>
-
-              <Form.Group className="mb-4">
-                <Form.Label className="label">Action</Form.Label>
-                <Form.Select
-                  className="form-control text-dark"
-                  aria-label="Default select example"
-                >
-                  <option>Select</option>
-                  <option defaultValue="0">Yes</option>
-                  <option defaultValue="1">No</option>
-                </Form.Select>
-              </Form.Group>
-
-              <Form.Group className="d-flex gap-3">
-                <Button
-                  variant="primary"
-                  type="submit"
-                  className="text-white fw-semibold py-2 px-2 px-sm-3"
-                >
-                  <span className="py-sm-1 d-block">
-                    <i className="ri-add-line text-white"></i>{" "}
-                    <span>Create New Customer</span>
-                  </span>
-                </Button>
-              </Form.Group>
-            </Form>
-          </div>
+          <button
+            type="button"
+            className="btn-close"
+            onClick={closeCustomerDrawer}
+            aria-label="Close"
+          ></button>
         </div>
-      </div>
+
+        <div className="customer-drawer-body">
+          {loading && !activeCustomer ? (
+            <div className="text-center py-5">
+              <Spinner animation="border" />
+              <p className="text-muted mt-3 mb-0">Loading customer...</p>
+            </div>
+          ) : activeCustomer ? (
+            <>
+              <Card className="border-0 bg-light rounded-4 mb-4">
+                <Card.Body>
+                  <div className="d-flex align-items-center gap-3">
+                    <div className="customer-avatar customer-avatar-lg">
+                      {getInitials(activeCustomer)}
+                    </div>
+
+                    <div>
+                      <h5 className="mb-1">{getCustomerName(activeCustomer)}</h5>
+                      <p className="text-muted mb-1">
+                        {activeCustomer.email || 'N/A'}
+                      </p>
+                      <p className="text-muted mb-0">
+                        {getCustomerPhone(activeCustomer)}
+                      </p>
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+
+              <Row className="g-3 mb-4">
+                <Col xs={6}>
+                  <Card className="border rounded-4 h-100">
+                    <Card.Body className="p-3">
+                      <span className="text-muted d-block">Orders</span>
+                      <h5 className="mb-0">
+                        {customerSummary?.totalOrders ||
+                          activeCustomer?.totalOrders ||
+                          0}
+                      </h5>
+                    </Card.Body>
+                  </Card>
+                </Col>
+
+                <Col xs={6}>
+                  <Card className="border rounded-4 h-100">
+                    <Card.Body className="p-3">
+                      <span className="text-muted d-block">Spend</span>
+                      <h5 className="mb-0">
+                        {formatMoney(
+                          customerSummary?.totalSpend ||
+                            activeCustomer?.totalSpend ||
+                            0
+                        )}
+                      </h5>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              </Row>
+
+              <Form onSubmit={handleUpdateCustomer}>
+                <Row>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>First Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={formData.firstName}
+                        className="rounded-3"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            firstName: e.target.value,
+                          })
+                        }
+                      />
+                    </Form.Group>
+                  </Col>
+
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label>Last Name</Form.Label>
+                      <Form.Control
+                        type="text"
+                        value={formData.lastName}
+                        className="rounded-3"
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            lastName: e.target.value,
+                          })
+                        }
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    value={formData.email}
+                    className="rounded-3"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        email: e.target.value,
+                      })
+                    }
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Phone</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={formData.phone}
+                    placeholder="Enter customer phone number"
+                    className="rounded-3"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        phone: e.target.value,
+                      })
+                    }
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-3">
+                  <Form.Label>Role</Form.Label>
+                  <Form.Select
+                    value={formData.role}
+                    className="rounded-3"
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        role: e.target.value,
+                      })
+                    }
+                  >
+                    <option value="user">User / Customer</option>
+                    <option value="admin">Admin</option>
+                  </Form.Select>
+                </Form.Group>
+
+                <Form.Group className="mb-4">
+                  <Form.Check
+                    type="switch"
+                    id="customer-active-switch"
+                    label={
+                      formData.isActive
+                        ? 'Customer account is active'
+                        : 'Customer account is deactivated'
+                    }
+                    checked={formData.isActive}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        isActive: e.target.checked,
+                      })
+                    }
+                  />
+                </Form.Group>
+
+                <Button
+                  type="submit"
+                  variant="primary"
+                  className="w-100 rounded-3"
+                  disabled={loading || !selectedCustomerId}
+                >
+                  Save Customer
+                </Button>
+              </Form>
+
+              <hr />
+
+              <h5 className="mb-3">Recent Orders</h5>
+
+              {customerOrders?.length > 0 ? (
+                customerOrders.slice(0, 5).map((order) => (
+                  <div
+                    key={order._id}
+                    className="border rounded-4 p-3 mb-3 bg-white"
+                  >
+                    <div className="d-flex justify-content-between gap-2">
+                      <strong>#{order.orderId}</strong>
+
+                      <Badge
+                        bg={order.isPaid ? 'success' : 'warning'}
+                        text={order.isPaid ? 'white' : 'dark'}
+                      >
+                        {order.isPaid ? 'Paid' : 'Unpaid'}
+                      </Badge>
+                    </div>
+
+                    <small className="text-muted d-block mt-1">
+                      {formatDate(order.createdAt)}
+                    </small>
+
+                    <div className="d-flex justify-content-between mt-2">
+                      <span>Status: {order.Delivery || 'N/A'}</span>
+                      <strong>{formatMoney(order.totalPrice)}</strong>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted mb-0">No recent orders found.</p>
+              )}
+            </>
+          ) : (
+            <Alert variant="warning">No customer selected.</Alert>
+          )}
+        </div>
+      </aside>
     </>
   );
 };

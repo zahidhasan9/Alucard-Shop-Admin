@@ -93,7 +93,7 @@ const PublishedProducts = () => {
                   {/* <td>{item.slug}</td> */}
 
                   <td>
-                    <Link href={'value.detailsLink'} className="d-flex align-items-center">
+                    <Link href={`/ecommerce/product-details?slug=${item.slug}`} className="d-flex align-items-center">
                       <Image src={item.thumbnail} className="wh-40 rounded-3" alt="product-1" width={40} height={40} />
                       <div className="ms-2 ps-1">
                         <h6 className="fw-medium fs-14">{item.name}</h6>
@@ -128,11 +128,11 @@ const PublishedProducts = () => {
 
                   <td>
                     <div className="d-flex align-items-center gap-1">
-                      {/* <Link href={'/ecommerce/orders/details/${item.slug}'}>
+                      <Link href={`/ecommerce/product-details?slug=${item.slug}`}>
                         <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
                           <span className="material-symbols-outlined fs-16 text-primary">visibility</span>
                         </button>
-                      </Link> */}
+                      </Link>
                       <Link href={`/ecommerce/edit-product/${item.slug}`}>
                         <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
                           <span className="material-symbols-outlined fs-16 text-body">edit</span>

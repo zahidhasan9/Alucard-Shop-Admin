@@ -73,6 +73,14 @@ const LeftSidebar = ({ toogleActive }) => {
                       Products List
                     </Link>
                   </li>
+                    <li className="menu-item">
+                    <Link
+                      href="/ecommerce/product-moderation/"
+                      className={`menu-link ${pathname === '/ecommerce/product-moderation/' ? 'active' : ''}`}
+                    >
+                      Product Moderation
+                    </Link>
+                  </li>
                   <li className="menu-item">
                     <Link
                       href="/ecommerce/product-details/"

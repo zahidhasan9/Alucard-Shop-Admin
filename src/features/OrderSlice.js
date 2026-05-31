@@ -349,6 +349,25 @@ export const resetDeliveryStatus = createAsyncThunk(
   }
 );
 
+export const updatePaymentStatus = createAsyncThunk(
+  'order/updatePaymentStatus',
+  async ({ orderId, status, transactionId, adminNote }, thunkAPI) => {
+    try {
+      const res = await API.updatePaymentStatus(orderId, {
+        status,
+        transactionId,
+        adminNote,
+      });
+
+      return getPayload(res);
+    } catch (err) {
+      return thunkAPI.rejectWithValue(
+        err.response?.data?.message || 'Payment status update failed'
+      );
+    }
+  }
+);
+
 export const fetchAllOrders = createAsyncThunk(
   'order/fetchAllOrders',
   async ({ page = 1, limit = 10, search = '' } = {}, thunkAPI) => {
@@ -423,7 +442,8 @@ const orderSlice = createSlice({
       })
       .addCase(fetchOrderById.fulfilled, (state, action) => {
         state.loading = false;
-        state.order = action.payload?.order || action.payload?.data || action.payload;
+        state.order =
+          action.payload?.order || action.payload?.data || action.payload;
       })
       .addCase(fetchOrderById.rejected, (state, action) => {
         state.loading = false;
@@ -439,13 +459,14 @@ const orderSlice = createSlice({
         state.loading = false;
         state.success = true;
 
-        const updated = action.payload?.order || action.payload?.data || action.payload;
+        const updated =
+          action.payload?.order || action.payload?.data || action.payload;
         state.order = updated;
 
         const index = state.orders.findIndex((o) => o._id === updated?._id);
         if (index !== -1) state.orders[index] = updated;
 
-        toast.success('Order status updated');
+        toast.success("Order status updated");
       })
       .addCase(updateDeliveryStatus.rejected, (state, action) => {
         state.loading = false;
@@ -461,16 +482,41 @@ const orderSlice = createSlice({
         state.loading = false;
         state.success = true;
 
-        const updated = action.payload?.order || action.payload?.data || action.payload;
+        const updated =
+          action.payload?.order || action.payload?.data || action.payload;
         if (updated?._id) {
           state.order = updated;
           const index = state.orders.findIndex((o) => o._id === updated._id);
           if (index !== -1) state.orders[index] = updated;
         }
 
-        toast.success(action.payload?.message || 'Delivery status reset');
+        toast.success(action.payload?.message || "Delivery status reset");
       })
       .addCase(resetDeliveryStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+        toast.error(action.payload);
+      })
+
+      .addCase(updatePaymentStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(updatePaymentStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        state.success = true;
+
+        const updated =
+          action.payload?.order || action.payload?.data || action.payload;
+
+        state.order = updated;
+
+        const index = state.orders.findIndex((o) => o._id === updated?._id);
+        if (index !== -1) state.orders[index] = updated;
+
+        toast.success("Payment status updated");
+      })
+      .addCase(updatePaymentStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         toast.error(action.payload);
@@ -484,7 +530,7 @@ const orderSlice = createSlice({
         state.loading = false;
         state.success = true;
         state.orders = state.orders.filter((o) => o._id !== action.payload);
-        toast.success('Order deleted successfully');
+        toast.success("Order deleted successfully");
       })
       .addCase(deleteOrder.rejected, (state, action) => {
         state.loading = false;
