@@ -121,18 +121,18 @@ const PublishedProducts = () => {
                   <td>{item.rating}</td>
 
                   <td>
-                    <span className={`badge bg-opacity-10 p-2 fs-12 fw-normal text-capitalize ${'item.status'}`}>
-                      {'item.status'}
+                    <span className={`badge bg-opacity-10 p-2 fs-12 fw-normal text-capitalize ${'item.isActive ? "bg-success" : "bg-danger'}`}>
+                      {item.isActive ? "active" : "inactive"}
                     </span>
                   </td>
 
                   <td>
                     <div className="d-flex align-items-center gap-1">
-                      <Link href={'/ecommerce/orders/details/${item.slug}'}>
+                      {/* <Link href={'/ecommerce/orders/details/${item.slug}'}>
                         <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
                           <span className="material-symbols-outlined fs-16 text-primary">visibility</span>
                         </button>
-                      </Link>
+                      </Link> */}
                       <Link href={`/ecommerce/edit-product/${item.slug}`}>
                         <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
                           <span className="material-symbols-outlined fs-16 text-body">edit</span>

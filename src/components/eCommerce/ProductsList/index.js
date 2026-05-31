@@ -2,8 +2,7 @@
 
 import { Card, Tab, Tabs } from "react-bootstrap";
 import AllProducts from './AllProducts';
-import PublishedProducts from './PublishedProducts';
-import DraftProducts from './DraftProducts';
+
 
 const ProductsList = () => {
   return (
@@ -17,14 +16,6 @@ const ProductsList = () => {
           >
             <Tab eventKey="allProducts" title="All Products">
               <AllProducts />
-            </Tab>
-
-            <Tab eventKey="publishedProducts" title="Published Products">
-              <PublishedProducts />
-            </Tab>
-
-            <Tab eventKey="draftProducts" title="Draft Products">
-              <DraftProducts />
             </Tab>
           </Tabs>
         </Card.Body>
