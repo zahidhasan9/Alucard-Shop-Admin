@@ -328,7 +328,6 @@
 
 
 
-
 import axiosInstance from '@/Apiutils/axiosInstance';
 
 // Auth / User
@@ -532,6 +531,17 @@ export const deleteCoupon = async (id) => {
   return data;
 };
 
+export const getCoupons = () => {
+  return axiosInstance.get("/coupon");
+};
+
+export const updateCoupon = (id, payload) => {
+  return axiosInstance.put(`/coupon/${id}`, payload);
+};
+
+export const seedDefaultCoupons = () => {
+  return axiosInstance.post("/coupon/seed-defaults");
+};
 
 
 // =======================================
@@ -750,3 +760,18 @@ export const deleteAdminQuestion = async (questionId) => {
   const { data } = await axiosInstance.delete(`/question/admin/${questionId}`);
   return data;
 };
+
+
+
+
+
+
+export const getDashboardStats = ({ range = '7d', lowStockLimit = 5 } = {}) => {
+  return axiosInstance.get('/dashboard/stats', {
+    params: {
+      range,
+      lowStockLimit,
+    },
+  });
+};
+

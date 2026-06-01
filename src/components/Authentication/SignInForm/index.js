@@ -28,13 +28,12 @@ const SignInForm = () => {
     dispatch(login(form));
   };
 
-  useEffect(() => {
+   useEffect(() => {
     if (isAuthenticated) {
-      setTimeout(() => {
-        router.push('dashboard/ecommerce/');
-      });
+      router.replace("/dashboard/ecommerce/");
     }
   }, [isAuthenticated, router]);
+
 
   return (
     <>
