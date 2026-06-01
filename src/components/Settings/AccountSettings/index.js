@@ -1,248 +1,226 @@
 "use client";
 
-import { Row, Col, Form } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import { Row, Col, Form, Button, Spinner } from "react-bootstrap";
 import Image from "next/image";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getLoggedInUser,
+  updateProfile,
+  clearUserState,
+} from "@/features/userSlice";
+
+const initialForm = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  phone: "",
+  address: "",
+  country: "",
+  dateOfBirth: "",
+  gender: "",
+  skills: "",
+  profession: "",
+  companyName: "",
+  companyWebsite: "",
+  bio: "",
+  facebook: "",
+  x: "",
+  linkedin: "",
+  youtube: "",
+};
 
 const AccountSettings = () => {
+  const dispatch = useDispatch();
+  const { user, loading } = useSelector((state) => state.user);
+
+  const [formData, setFormData] = useState(initialForm);
+  const [mounted, setMounted] = useState(false);
+
+useEffect(() => {
+  setMounted(true);
+}, []);
+
+const isBusy = mounted ? Boolean(loading) : false;
+
+  useEffect(() => {
+    dispatch(getLoggedInUser());
+
+    return () => {
+      dispatch(clearUserState());
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    setFormData({
+      firstName: user.firstName || "",
+      lastName: user.lastName || "",
+      email: user.email || "",
+      phone: user.phone || "",
+      address: user.address || "",
+      country: user.country || "",
+      dateOfBirth: user.dateOfBirth ? user.dateOfBirth.slice(0, 10) : "",
+      gender: user.gender || "",
+      skills: user.skills || "",
+      profession: user.profession || "",
+      companyName: user.companyName || "",
+      companyWebsite: user.companyWebsite || "",
+      bio: user.bio || "",
+      facebook: user.socials?.facebook || "",
+      x: user.socials?.x || "",
+      linkedin: user.socials?.linkedin || "",
+      youtube: user.socials?.youtube || "",
+    });
+  }, [user]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "email") return;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const payload = {
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      phone: formData.phone,
+      address: formData.address,
+      country: formData.country,
+      dateOfBirth: formData.dateOfBirth || null,
+      gender: formData.gender,
+      skills: formData.skills,
+      profession: formData.profession,
+      companyName: formData.companyName,
+      companyWebsite: formData.companyWebsite,
+      bio: formData.bio,
+      socials: {
+        facebook: formData.facebook,
+        x: formData.x,
+        linkedin: formData.linkedin,
+        youtube: formData.youtube,
+      },
+    };
+
+    dispatch(updateProfile(payload));
+  };
+
+  const inputField = (name, label, type = "text", icon = "ri-user-line") => (
+    <Col lg={6}>
+      <Form.Group className="mb-4">
+        <label className="label text-secondary">{label}</label>
+        <Form.Group className="position-relative">
+          <Form.Control
+            name={name}
+            type={type}
+            className="text-dark ps-5 h-55"
+            value={formData[name]}
+            onChange={handleChange}
+          />
+          <i
+            className={`${icon} position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20`}
+          ></i>
+        </Form.Group>
+      </Form.Group>
+    </Col>
+  );
+
   return (
     <>
       <div className="mb-4">
         <h4 className="fs-20 mb-1">Profile</h4>
-        <p className="fs-15">Update your photo and personal details here.</p>
+        <p className="fs-15">Update your personal details here.</p>
       </div>
 
-      <Form>
+      <Form onSubmit={handleSubmit}>
         <Row>
-          <Col lg={6}>
-            <Form.Group className="mb-4">
-              <label className="label text-secondary">First Name</label>
-              <Form.Group className="position-relative">
-                <Form.Control
-                  type="text"
-                  className="text-dark ps-5 h-55"
-                  defaultValue="Olivia"
-                />
-                <i className="ri-user-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
-            </Form.Group>
-          </Col>
-
-          <Col lg={6}>
-            <Form.Group className="mb-4">
-              <label className="label text-secondary">Last Name</label>
-              <Form.Group className="position-relative">
-                <Form.Control
-                  type="text"
-                  className="text-dark ps-5 h-55"
-                  defaultValue="John"
-                />
-                <i className="ri-user-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
-            </Form.Group>
-          </Col>
+          {inputField("firstName", "First Name", "text", "ri-user-line")}
+          {inputField("lastName", "Last Name", "text", "ri-user-line")}
 
           <Col lg={6}>
             <Form.Group className="mb-4">
               <label className="label text-secondary">Email Address</label>
               <Form.Group className="position-relative">
                 <Form.Control
+                  name="email"
                   type="email"
                   className="text-dark ps-5 h-55"
-                  defaultValue="olivia@trezo.com"
+                  value={formData.email}
+                  disabled
+                  readOnly
                 />
                 <i className="ri-mail-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
               </Form.Group>
+              <small className="text-muted">
+                Email address cannot be changed.
+              </small>
             </Form.Group>
           </Col>
 
-          <Col lg={6}>
-            <Form.Group className="mb-4">
-              <label className="label text-secondary">Phone</label>
-              <Form.Group className="position-relative">
-                <Form.Control
-                  type="text"
-                  className="text-dark ps-5 h-55"
-                  defaultValue="+1 444 555 6699"
-                />
-                <i className="ri-phone-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
-            </Form.Group>
-          </Col>
-
-          <Col lg={6}>
-            <Form.Group className="mb-4">
-              <label className="label text-secondary">Address</label>
-              <Form.Group className="position-relative">
-                <Form.Control
-                  type="text"
-                  className="text-dark ps-5 h-55"
-                  defaultValue="E.g. 84 S. Arrowhead Court Branford"
-                />
-                <i className="ri-phone-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
-            </Form.Group>
-          </Col>
+          {inputField("phone", "Phone", "text", "ri-phone-line")}
+          {inputField("address", "Address", "text", "ri-map-pin-line")}
 
           <Col lg={6}>
             <Form.Group className="mb-4">
               <label className="label text-secondary">Country</label>
-              <Form.Group className="position-relative">
-                <Form.Select
-                  className="form-control ps-5 h-55"
-                  aria-label="Default select example"
-                >
-                  <option value="0" className="text-dark">
-                    Switzerland
-                  </option>
-                  <option value="1" className="text-dark">
-                    United States
-                  </option>
-                  <option value="2" className="text-dark">
-                    Canada
-                  </option>
-                  <option value="3" className="text-dark">
-                    France
-                  </option>
-                </Form.Select>
-                <i className="ri-map-2-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
+              <Form.Select
+                name="country"
+                className="form-control h-55"
+                value={formData.country}
+                onChange={handleChange}
+              >
+                <option value="">Select Country</option>
+                <option value="Bangladesh">Bangladesh</option>
+                <option value="Switzerland">Switzerland</option>
+                <option value="United States">United States</option>
+                <option value="Canada">Canada</option>
+                <option value="France">France</option>
+              </Form.Select>
             </Form.Group>
           </Col>
 
-          <Col lg={6}>
-            <Form.Group className="mb-4">
-              <label className="label text-secondary">Date Of Birth</label>
-              <Form.Group className="position-relative">
-                <Form.Control
-                  type="date"
-                  className="text-dark ps-5 h-55 text-gray-light"
-                />
-                <i className="ri-calendar-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
-            </Form.Group>
-          </Col>
+          {inputField("dateOfBirth", "Date Of Birth", "date", "ri-calendar-line")}
 
           <Col lg={6}>
             <Form.Group className="mb-4">
               <label className="label text-secondary">Gender</label>
-              <Form.Group className="position-relative">
-                <Form.Select
-                  className="form-control ps-5 h-55"
-                  aria-label="Default select example"
-                >
-                  <option value="0" className="text-dark">
-                    Male
-                  </option>
-                  <option value="1" className="text-dark">
-                    Female
-                  </option>
-                  <option value="2" className="text-dark">
-                    Others
-                  </option>
-                </Form.Select>
-                <i className="ri-men-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
+              <Form.Select
+                name="gender"
+                className="form-control h-55"
+                value={formData.gender}
+                onChange={handleChange}
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Others">Others</option>
+              </Form.Select>
             </Form.Group>
           </Col>
 
-          <Col lg={6}>
-            <Form.Group className="mb-4">
-              <label className="label text-secondary">Your Skills</label>
-              <Form.Group className="position-relative">
-                <Form.Select
-                  className="form-control ps-5 h-55"
-                  aria-label="Default select example"
-                >
-                  <option value="0" className="text-dark">
-                    Project Management
-                  </option>
-                  <option value="1" className="text-dark">
-                    Leadership
-                  </option>
-                  <option value="2" className="text-dark">
-                    Data Analysis
-                  </option>
-                  <option value="3" className="text-dark">
-                    Teamwork
-                  </option>
-                  <option value="4" className="text-dark">
-                    Web Development
-                  </option>
-                </Form.Select>
-                <i className="ri-men-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
-            </Form.Group>
-          </Col>
-
-          <Col lg={6}>
-            <Form.Group className="mb-4">
-              <label className="label text-secondary">Your Profession</label>
-              <Form.Group className="position-relative">
-                <Form.Select
-                  className="form-control ps-5 h-55"
-                  aria-label="Default select example"
-                >
-                  <option value="0" className="text-dark">
-                    Software Developer
-                  </option>
-                  <option value="1" className="text-dark">
-                    Financial Manager
-                  </option>
-                  <option value="2" className="text-dark">
-                    IT Manager
-                  </option>
-                  <option value="3" className="text-dark">
-                    Teamwork
-                  </option>
-                  <option value="4" className="text-dark">
-                    Physician Assistant
-                  </option>
-                </Form.Select>
-                <i className="ri-men-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
-            </Form.Group>
-          </Col>
-
-          <Col lg={6}>
-            <Form.Group className="mb-4">
-              <label className="label text-secondary">Company Name</label>
-              <Form.Group className="position-relative">
-                <Form.Control
-                  type="text"
-                  className="text-dark ps-5 h-55"
-                  defaultValue="Trezo Admin"
-                />
-                <i className="ri-phone-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
-            </Form.Group>
-          </Col>
-
-          <Col lg={6}>
-            <Form.Group className="mb-4">
-              <label className="label text-secondary">Company Website</label>
-              <Form.Group className="position-relative">
-                <Form.Control
-                  type="url"
-                  className="text-dark ps-5 h-55"
-                  defaultValue="http://website.com"
-                />
-                <i className="ri-phone-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
-            </Form.Group>
-          </Col>
+          {inputField("skills", "Your Skills", "text", "ri-tools-line")}
+          {inputField("profession", "Your Profession", "text", "ri-briefcase-line")}
+          {inputField("companyName", "Company Name", "text", "ri-building-line")}
+          {inputField("companyWebsite", "Company Website", "url", "ri-global-line")}
 
           <Col lg={12}>
             <Form.Group className="mb-4">
               <label className="label text-secondary">Bio Data :</label>
-              <Form.Group className="position-relative">
-                <textarea
-                  className="form-control ps-5 text-dark"
-                  placeholder="Bio Data ... "
-                  cols="30"
-                  rows="5"
-                ></textarea>
-                <i className="ri-information-line position-absolute top-3 start-0 fs-20 text-gray-light ps-20 pt-2"></i>
-              </Form.Group>
+              <textarea
+                name="bio"
+                className="form-control text-dark"
+                rows="5"
+                value={formData.bio}
+                onChange={handleChange}
+              ></textarea>
             </Form.Group>
           </Col>
 
@@ -253,8 +231,9 @@ const AccountSettings = () => {
                   <h4 className="body-font fs-15 fw-semibold text-body">
                     Your photo
                   </h4>
-                  <p>This will be displayed on your profile.</p>
+                  <p>Photo upload is disabled for now.</p>
                 </div>
+
                 <Image
                   src="/images/user-70.png"
                   className="rounded-4 wh-75 ms-3 ms-lg-0 rounded-circle"
@@ -262,37 +241,6 @@ const AccountSettings = () => {
                   width={75}
                   height={75}
                 />
-              </div>
-
-              <div className="d-flex ms-sm-3 ms-md-0">
-                <button className="btn bg-danger bg-opacity-10 text-danger fw-semibold">
-                  Delete
-                </button>
-                <button className="btn bg-primary bg-opacity-10 text-primary fw-semibold ms-3">
-                  Update
-                </button>
-              </div>
-            </Form.Group>
-          </Col>
-
-          <Col lg={12}>
-            <Form.Group>
-              <label className="label text-secondary">
-                File Upload - Product Gallery
-              </label>
-              <div className="form-control h-100 text-center position-relative p-4 p-lg-5">
-                <div className="product-upload">
-                  <label htmlFor="file-upload" className="file-upload mb-0">
-                    <i className="ri-folder-image-line bg-primary bg-opacity-10 p-2 rounded-1 text-primary"></i>
-                    <span className="d-block text-body fs-14">
-                      Drag and drop an image or{" "}
-                      <span className="text-primary text-decoration-underline">
-                        Browse
-                      </span>
-                    </span>
-                  </label>
-                  <input id="file-upload" type="file" />
-                </div>
               </div>
             </Form.Group>
           </Col>
@@ -303,78 +251,41 @@ const AccountSettings = () => {
         </div>
 
         <Row>
-          <Col lg={6}>
-            <Form.Group className="mb-4">
-              <label className="label text-secondary">Facebook</label>
-              <Form.Group className="position-relative">
-                <Form.Control
-                  type="url"
-                  className="text-dark ps-5 h-55"
-                  defaultValue="https://www.facebook.com/"
-                />
-                <i className="ri-facebook-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
-            </Form.Group>
-          </Col>
-
-          <Col lg={6}>
-            <Form.Group className="mb-4">
-              <label className="label text-secondary">X</label>
-              <Form.Group className="position-relative">
-                <Form.Control
-                  type="url"
-                  className="text-dark ps-5 h-55"
-                  defaultValue="https://x.com/"
-                />
-                <i className="ri-twitter-x-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
-            </Form.Group>
-          </Col>
-
-          <Col lg={6}>
-            <Form.Group className="mb-4">
-              <label className="label text-secondary">Linkedin</label>
-              <Form.Group className="position-relative">
-                <Form.Control
-                  type="url"
-                  className="text-dark ps-5 h-55"
-                  defaultValue="https://www.linkedin.com/"
-                />
-                <i className="ri-linkedin-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
-            </Form.Group>
-          </Col>
-
-          <Col lg={6}>
-            <Form.Group className="mb-4">
-              <label className="label text-secondary">YouTube</label>
-              <Form.Group className="position-relative">
-                <Form.Control
-                  type="url"
-                  className="text-dark ps-5 h-55"
-                  defaultValue="https://www.youtube.com/"
-                />
-                <i className="ri-youtube-line position-absolute top-50 start-0 translate-middle-y fs-20 text-gray-light ps-20"></i>
-              </Form.Group>
-            </Form.Group>
-          </Col>
+          {inputField("facebook", "Facebook", "url", "ri-facebook-line")}
+          {inputField("x", "X", "url", "ri-twitter-x-line")}
+          {inputField("linkedin", "Linkedin", "url", "ri-linkedin-line")}
+          {inputField("youtube", "YouTube", "url", "ri-youtube-line")}
 
           <Col lg={12}>
             <div className="d-flex flex-wrap gap-3">
-              <button
-                type="submit"
-                className="btn btn-danger py-2 px-4 fw-medium fs-16 text-white"
+              <Button
+                type="button"
+                variant="danger"
+                className="py-2 px-4 fw-medium fs-16 text-white"
+                onClick={() => user && setFormData((prev) => ({ ...prev }))}
+                disabled={isBusy}
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+
+              <Button
                 type="submit"
-                className="btn btn-primary py-2 px-4 fw-medium fs-16"
+                variant="primary"
+                className="py-2 px-4 fw-medium fs-16"
+                disabled={isBusy}
               >
-                {" "}
-                <i className="ri-check-line text-white fw-medium"></i> Upload
-                Profile
-              </button>
+                {isBusy ? (
+                  <>
+                    <Spinner size="sm" className="me-2" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <i className="ri-check-line text-white fw-medium"></i>{" "}
+                    Update Profile
+                  </>
+                )}
+              </Button>
             </div>
           </Col>
         </Row>

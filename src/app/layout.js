@@ -28,12 +28,12 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <LayoutProvider>
-          <Providers>
+        <Providers>
+          <LayoutProvider>
             <AppWrapper>{children}</AppWrapper>
             <GlobalToast />
-          </Providers>
-        </LayoutProvider>
+          </LayoutProvider>
+        </Providers>
       </body>
     </html>
   );

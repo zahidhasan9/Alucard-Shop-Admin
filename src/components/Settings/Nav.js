@@ -34,45 +34,6 @@ const Nav = () => {
             Change Password
           </Link>
         </li>
-
-        <li>
-          <Link
-            href="/settings/connections/"
-            className={`btn border border-primary text-primary py-2 px-3 fw-semibold ${
-              pathname === "/settings/connections/"
-                ? "btn-primary text-white"
-                : "bg-transparent"
-            }`}
-          >
-            Connections
-          </Link>
-        </li>
-
-        <li>
-          <Link
-            href="/settings/privacy-policy/"
-            className={`btn border border-primary text-primary py-2 px-3 fw-semibold ${
-              pathname === "/settings/privacy-policy/"
-                ? "btn-primary text-white"
-                : "bg-transparent"
-            }`}
-          >
-            Privacy Policy
-          </Link>
-        </li>
-
-        <li>
-          <Link
-            href="/settings/terms-conditions/"
-            className={`btn border border-primary text-primary py-2 px-3 fw-semibold ${
-              pathname === "/settings/terms-conditions/"
-                ? "btn-primary text-white"
-                : "bg-transparent"
-            }`}
-          >
-            Terms & Conditions
-          </Link>
-        </li>
       </ul>
     </>
   );

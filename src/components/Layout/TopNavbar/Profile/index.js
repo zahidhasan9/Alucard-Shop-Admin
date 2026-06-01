@@ -1,152 +1,12 @@
-// "use client";
-
-// import { Dropdown } from "react-bootstrap";
-// import Image from "next/image"; 
-
-// const Profile = () => {
-//   return (
-//     <>
-//       <Dropdown className="admin-profile">
-//         <Dropdown.Toggle className="d-xxl-flex align-items-center bg-transparent border-0 text-start p-0 cursor">
-//           <div className="flex-shrink-0">
-//             <Image
-//               className="rounded-circle wh-40 administrator"
-//               src="/images/administrator.jpg"
-//               alt="admin"
-//               width={40}
-//               height={40}
-//             />
-//           </div>
-
-//           <div className="flex-grow-1 ms-2">
-//             <div className="d-flex align-items-center justify-content-between">
-//               <div className="d-none d-xxl-block">
-//                 <div className="d-flex align-content-center">
-//                   <h3>Olivia</h3>
-//                 </div>
-//               </div>
-//             </div>
-//           </div>
-//         </Dropdown.Toggle>
-
-//         <Dropdown.Menu className="border-0 bg-white dropdown-menu-end">
-//           <div className="d-flex align-items-center info">
-//             <div className="flex-shrink-0">
-//               <Image
-//                 className="rounded-circle wh-30 administrator"
-//                 src="/images/administrator.jpg"
-//                 alt="admin"
-//                 width={30}
-//                 height={30}
-//               />
-//             </div>
-//             <div className="flex-grow-1 ms-2">
-//               <h3 className="fw-medium">Olivia John</h3>
-//               <span className="fs-12">Marketing Manager</span>
-//             </div>
-//           </div>
-
-//           <ul className="admin-link ps-0 mb-0 list-unstyled">
-//             <li>
-//               <a
-//                 className="dropdown-item d-flex align-items-center text-body"
-//                 href="/my-profile/"
-//               >
-//                 <i className="material-symbols-outlined">account_circle</i>
-//                 <span className="ms-2">My Profile</span>
-//               </a>
-//             </li>
-
-//             <li>
-//               <a
-//                 className="dropdown-item d-flex align-items-center text-body"
-//                 href="/apps/chat/"
-//               >
-//                 <i className="material-symbols-outlined">chat</i>
-//                 <span className="ms-2">Messages</span>
-//               </a>
-//             </li>
-
-//             <li>
-//               <a
-//                 className="dropdown-item d-flex align-items-center text-body"
-//                 href="/apps/to-do-list/"
-//               >
-//                 <i className="material-symbols-outlined">
-//                   format_list_bulleted
-//                 </i>
-//                 <span className="ms-2">My Task</span>
-//               </a>
-//             </li>
-
-//             <li>
-//               <a
-//                 className="dropdown-item d-flex align-items-center text-body"
-//                 href="/ecommerce/checkout/"
-//               >
-//                 <i className="material-symbols-outlined">credit_card</i>
-//                 <span className="ms-2">Billing</span>
-//               </a>
-//             </li>
-//           </ul>
-
-//           <ul className="admin-link ps-0 mb-0 list-unstyled">
-//             <li>
-//               <a
-//                 className="dropdown-item d-flex align-items-center text-body"
-//                 href="/settings/account-settings/"
-//               >
-//                 <i className="material-symbols-outlined">settings</i>
-//                 <span className="ms-2">Settings</span>
-//               </a>
-//             </li>
-
-//             <li>
-//               <a
-//                 className="dropdown-item d-flex align-items-center text-body"
-//                 href="/helpdesk/tickets/"
-//               >
-//                 <i className="material-symbols-outlined">support</i>
-//                 <span className="ms-2">Support</span>
-//               </a>
-//             </li>
-
-//             <li>
-//               <a
-//                 className="dropdown-item d-flex align-items-center text-body"
-//                 href="/authentication/lock-screen/"
-//               >
-//                 <i className="material-symbols-outlined">lock</i>
-//                 <span className="ms-2">Lock Screen</span>
-//               </a>
-//             </li>
-
-//             <li>
-//               <a
-//                 className="dropdown-item d-flex align-items-center text-body"
-//                 href="/authentication/logout/"
-//               >
-//                 <i className="material-symbols-outlined">logout</i>
-//                 <span className="ms-2">Logout</span>
-//               </a>
-//             </li>
-//           </ul>
-//         </Dropdown.Menu>
-//       </Dropdown>
-//     </>
-//   );
-// };
-
-// export default Profile;
-
-
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useDispatch } from "react-redux";
 import { Dropdown, Spinner } from "react-bootstrap";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import axiosInstance from "@/Apiutils/axiosInstance";
+import { setUser } from "@/features/userSlice";
 
 const getUserFromResponse = (payload) => {
   return (
@@ -183,6 +43,7 @@ const getInitials = (name) => {
 
 const Profile = () => {
   const router = useRouter();
+  const dispatch = useDispatch();
 
   const [admin, setAdmin] = useState({
     name: "Admin",
@@ -231,22 +92,23 @@ const Profile = () => {
   }, []);
 
   const handleLogout = async () => {
-    try {
-      setIsLoggingOut(true);
+  setIsLoggingOut(true);
 
-      await axiosInstance.post("/auth/logout");
-    } catch (error) {
-      console.log("Logout API failed:", error?.response?.data || error.message);
-    } finally {
-      localStorage.removeItem("token");
-      localStorage.removeItem("user");
-      localStorage.removeItem("userInfo");
-      localStorage.removeItem("admin");
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("userInfo");
+  localStorage.removeItem("admin");
 
-      router.replace("/authentication/sign-in/");
-      router.refresh();
-    }
-  };
+  dispatch(setUser(null));
+
+  try {
+    await axiosInstance.post("/auth/logout", {}, { timeout: 3000 });
+  } catch (error) {
+    console.log("Logout API skipped/failed:", error?.response?.data || error.message);
+  }
+
+  window.location.replace("/authentication/sign-in/");
+};
 
   return (
     <Dropdown className="admin-profile">
@@ -294,17 +156,27 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="flex-grow-1 ms-2">
-            <h3 className="fw-medium mb-0">
+          <div className="flex-grow-1 ms-2" style={{ minWidth: 0 }}>
+            <h3
+              className="fw-medium mb-0 text-truncate"
+              style={{ maxWidth: "180px" }}
+              title={isLoadingProfile ? "Loading..." : admin.name}
+            >
               {isLoadingProfile ? "Loading..." : admin.name}
             </h3>
 
-            <span className="fs-12">{admin.email}</span>
+            <span
+              className="fs-12 d-block text-truncate"
+              style={{ maxWidth: "180px" }}
+              title={admin.email}
+            >
+              {admin.email}
+            </span>
           </div>
         </div>
 
         <ul className="admin-link ps-0 mb-0 list-unstyled">
-          <li>
+          {/* <li>
             <Dropdown.Item
               as={Link}
               href="/my-profile/"
@@ -313,7 +185,7 @@ const Profile = () => {
               <i className="material-symbols-outlined">account_circle</i>
               <span className="ms-2">My Profile</span>
             </Dropdown.Item>
-          </li>
+          </li> */}
 
           <li>
             <Dropdown.Item

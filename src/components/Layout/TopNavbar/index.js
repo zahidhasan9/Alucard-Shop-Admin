@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Notifications from "./Notifications";
+// import Notifications from "./Notifications";
 import Profile from "./Profile";
 
 const TopNavbar = ({ toogleActive }) => {
@@ -58,9 +58,9 @@ const TopNavbar = ({ toogleActive }) => {
         <div className="col-lg-6 col-sm-6">
           <div className="right-header-content mt-2 mt-sm-0">
             <ul className="d-flex align-items-center justify-content-center justify-content-sm-end ps-0 mb-0 list-unstyled">
-              <li className="header-right-item">
+              {/* <li className="header-right-item">
                 <Notifications />
-              </li>
+              </li> */}
 
               <li className="header-right-item">
                 <Profile />
