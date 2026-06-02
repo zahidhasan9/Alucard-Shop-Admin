@@ -373,7 +373,12 @@ export const resetPassword = async (id, token, passwordData) => {
 
 // Product
 export const getProducts = async (params = {}) => {
-  const { data } = await axiosInstance.get('/product', { params });
+  const { data } = await axiosInstance.get('/product/admin/all', { params });
+  return data;
+};
+
+export const getProduct = async (slug) => {
+  const { data } = await axiosInstance.get(`/product/admin/${slug}`);
   return data;
 };
 
@@ -388,11 +393,6 @@ export const createProduct = async (productData) => {
 
   const response = await axiosInstance.post('/product/add', productData, config);
   return response.data;
-};
-
-export const getProduct = async (slug) => {
-  const { data } = await axiosInstance.get(`/product/${slug}`);
-  return data;
 };
 
 export const updateProduct = async (slug, productData) => {
@@ -775,3 +775,58 @@ export const getDashboardStats = ({ range = '7d', lowStockLimit = 5 } = {}) => {
   });
 };
 
+
+
+
+// Banner Admin API
+export const getAdminBanners = async (params = {}) => {
+  const { data } = await axiosInstance.get('/banner/admin/all', {
+    params: {
+      ...params,
+      _t: Date.now(),
+    },
+  });
+
+  return data;
+};
+
+export const createBanner = async (bannerData) => {
+  const config = {};
+
+  if (bannerData instanceof FormData) {
+    config.headers = {
+      'Content-Type': 'multipart/form-data',
+    };
+  }
+
+  const { data } = await axiosInstance.post('/banner', bannerData, config);
+  return data;
+};
+
+export const getBannerById = async (id) => {
+  const { data } = await axiosInstance.get(`/banner/admin/${id}`);
+  return data;
+};
+
+export const updateBanner = async (id, bannerData) => {
+  const config = {};
+
+  if (bannerData instanceof FormData) {
+    config.headers = {
+      'Content-Type': 'multipart/form-data',
+    };
+  }
+
+  const { data } = await axiosInstance.put(`/banner/${id}`, bannerData, config);
+  return data;
+};
+
+export const toggleBannerStatus = async (id, payload) => {
+  const { data } = await axiosInstance.patch(`/banner/${id}/status`, payload);
+  return data;
+};
+
+export const deleteBanner = async (id) => {
+  const { data } = await axiosInstance.delete(`/banner/${id}`);
+  return data;
+};

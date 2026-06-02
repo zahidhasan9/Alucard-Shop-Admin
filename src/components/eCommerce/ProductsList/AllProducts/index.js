@@ -93,15 +93,24 @@ const PublishedProducts = () => {
                   {/* <td>{item.slug}</td> */}
 
                   <td>
-                    <Link href={`/ecommerce/product-details?slug=${item.slug}`} className="d-flex align-items-center">
-                      <Image src={item.thumbnail} className="wh-40 rounded-3" alt="product-1" width={40} height={40} />
+                    <Link
+                      href={`/ecommerce/product-details?slug=${item.slug}`}
+                      className="d-flex align-items-center"
+                    >
+                      <Image
+                        src={item.thumbnail}
+                        className="wh-40 rounded-3"
+                        alt="product-1"
+                        width={40}
+                        height={40}
+                      />
                       <div className="ms-2 ps-1">
                         <h6 className="fw-medium fs-14">{item.name}</h6>
                         <span className="fs-12 text-body">
-                          {new Date(item.createdAt).toLocaleString('en-BD', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric'
+                          {new Date(item.createdAt).toLocaleString("en-BD", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
                           })}
                         </span>
                       </div>
@@ -121,21 +130,29 @@ const PublishedProducts = () => {
                   <td>{item.rating}</td>
 
                   <td>
-                    <span className={`badge bg-opacity-10 p-2 fs-12 fw-normal text-capitalize ${'item.isActive ? "bg-success" : "bg-danger'}`}>
+                    <span
+                      className={`badge bg-opacity-10 p-2 fs-12 fw-normal text-capitalize ${'item.isActive ? "bg-success" : "bg-danger'}`}
+                    >
                       {item.isActive ? "active" : "inactive"}
                     </span>
                   </td>
 
                   <td>
                     <div className="d-flex align-items-center gap-1">
-                      <Link href={`/ecommerce/product-details?slug=${item.slug}`}>
+                      <Link
+                        href={`/ecommerce/product-details?slug=${item.slug}`}
+                      >
                         <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                          <span className="material-symbols-outlined fs-16 text-primary">visibility</span>
+                          <span className="material-symbols-outlined fs-16 text-primary">
+                            visibility
+                          </span>
                         </button>
                       </Link>
                       <Link href={`/ecommerce/edit-product/${item.slug}`}>
                         <button className="ps-0 border-0 bg-transparent lh-1 position-relative top-2">
-                          <span className="material-symbols-outlined fs-16 text-body">edit</span>
+                          <span className="material-symbols-outlined fs-16 text-body">
+                            edit
+                          </span>
                         </button>
                       </Link>
 
@@ -156,7 +173,12 @@ const PublishedProducts = () => {
         </div>
 
         {/* Pagination */}
-        <Pagination page={page} totalPages={totalPages} onPageChange={handlePageChange} />
+        <Pagination
+          currentPage={Number(page) || 1}
+          totalItems={Number(total) || 0}
+          itemsPerPage={Number(limit) || 10}
+          onPageChange={handlePageChange}
+        />
       </div>
 
       {/* Confirm‑delete modal */}
@@ -164,7 +186,10 @@ const PublishedProducts = () => {
         <Modal.Header closeButton>
           <Modal.Title>Delete Product</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Are you sure you want to delete this product? This action cannot be undone.</Modal.Body>
+        <Modal.Body>
+          Are you sure you want to delete this product? This action cannot be
+          undone.
+        </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={cancelDelete}>
             Cancel

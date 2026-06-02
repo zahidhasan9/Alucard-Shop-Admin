@@ -9,6 +9,7 @@ import reviewSlice from '@/features/reviewSlice.js';
 import CartSlice from '@/features/cartSlice.js';
 import OrderSlice from '@/features/OrderSlice.js';
 import questionSlice from '@/features/questionSlice.js';
+import bannerSlice from '@/features/bannerSlice.js';
 
 const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ const store = configureStore({
     cart: CartSlice,
     order: OrderSlice,
     question: questionSlice,
+    banner: bannerSlice,
   }
 });
 
