@@ -15,6 +15,14 @@ import axios from 'axios';
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
 
+if (
+  typeof window !== 'undefined' &&
+  process.env.NODE_ENV === 'production' &&
+  !process.env.NEXT_PUBLIC_API_URL
+) {
+  console.warn('NEXT_PUBLIC_API_URL is missing. Admin API is using localhost fallback.');
+}
+
 const axiosInstance = axios.create({
   baseURL: API_BASE_URL,
   withCredentials: true,
