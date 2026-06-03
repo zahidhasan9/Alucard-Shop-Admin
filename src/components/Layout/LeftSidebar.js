@@ -134,6 +134,15 @@ const LeftSidebar = ({ toogleActive }) => {
                       Customers
                     </Link>
                   </li>
+
+                  <li className="menu-item">
+                    <Link
+                      href="/ecommerce/refunds/"
+                      className={`menu-link ${pathname === "/ecommerce/refunds/" ? "active" : ""}`}
+                    >
+                      Refunds
+                    </Link>
+                  </li>
                 </ul>
               </Accordion.Body>
             </Accordion.Item>

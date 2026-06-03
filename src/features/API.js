@@ -830,3 +830,18 @@ export const deleteBanner = async (id) => {
   const { data } = await axiosInstance.delete(`/banner/${id}`);
   return data;
 };
+
+
+// Return Request Admin API
+export const getAdminReturnRequests = async (params = {}) => {
+  const { data } = await axiosInstance.get('/return-request', { params });
+  return data;
+};
+
+export const updateReturnRequestStatus = async (id, payload) => {
+  const { data } = await axiosInstance.put(
+    `/return-request/${id}/status`,
+    payload
+  );
+  return data;
+};
